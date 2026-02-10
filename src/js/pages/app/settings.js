@@ -71,10 +71,19 @@ class SettingsPage {
 
   async loadUserData() {
     try {
+      // Get current user first
       this.currentUser = await window.AuthService.getCurrentUserWithProfile();
       
       if (!this.currentUser) {
         throw new Error('User not authenticated');
+      }
+
+      // If profile data is missing, fetch it using REST API
+      if (!this.currentUser.profile) {
+        const profileResult = await window.API.getProfile(this.currentUser.id);
+        if (profileResult.data && profileResult.data.length > 0) {
+          this.currentUser.profile = profileResult.data[0];
+        }
       }
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -84,15 +93,8 @@ class SettingsPage {
 
   async loadKYCStatus() {
     try {
-      const { data, error } = await window.API.fetchEdge('kyc_status', {
-        method: 'GET'
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      this.kycStatus = data.status || { status: 'not_submitted' };
+      // For now, set default status since KYC might be handled separately
+      this.kycStatus = { status: 'not_submitted' };
     } catch (error) {
       console.error('Failed to load KYC status:', error);
       this.kycStatus = { status: 'not_submitted' };
@@ -101,15 +103,8 @@ class SettingsPage {
 
   async loadPayoutMethods() {
     try {
-      const { data, error } = await window.API.fetchEdge('payout_methods_list', {
-        method: 'GET'
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      this.payoutMethods = data.methods || [];
+      // For now, set empty array since payout methods might be handled separately
+      this.payoutMethods = [];
     } catch (error) {
       console.error('Failed to load payout methods:', error);
       this.payoutMethods = [];
@@ -167,18 +162,33 @@ class SettingsPage {
     this.originalProfileData = {
       firstName: profile.first_name || '',
       lastName: profile.last_name || '',
+      displayName: profile.display_name || '',
       phone: profile.phone || '',
       country: profile.country || '',
-      bio: profile.bio || ''
+      bio: profile.bio || '',
+      // Address fields
+      address_line1: profile.address_line1 || '',
+      address_line2: profile.address_line2 || '',
+      city: profile.city || '',
+      state: profile.state || '',
+      postal_code: profile.postal_code || '',
+      // Compliance fields
+      occupation: profile.occupation || '',
+      dob: profile.dob || ''
     };
 
-    // Populate form fields
+    // Populate form fields with database data
+    document.getElementById('display-name').value = profile.display_name || '';
     document.getElementById('first-name').value = profile.first_name || '';
     document.getElementById('last-name').value = profile.last_name || '';
     document.getElementById('email').value = this.currentUser.email || '';
     document.getElementById('phone').value = profile.phone || '';
     document.getElementById('country').value = profile.country || '';
     document.getElementById('bio').value = profile.bio || '';
+    
+    // Log the loaded data for debugging
+    console.log('Settings page loaded profile data:', profile);
+    console.log('Display name from database:', profile.display_name);
   }
 
   renderKYCStatus() {
@@ -366,17 +376,19 @@ class SettingsPage {
         bio: formData.get('bio')
       };
 
-      const { data, error } = await window.API.fetchEdge('settings_update', {
-        method: 'POST',
-        body: JSON.stringify({ profile: profileData })
-      });
+      const { data, error } = await window.API.updateProfile(this.currentUser.id, profileData);
 
       if (error) {
         throw error;
       }
 
+      // Update local data
+      if (this.currentUser.profile) {
+        Object.assign(this.currentUser.profile, profileData);
+      }
+
       // Update original data
-      this.originalProfileData = profileData;
+      this.originalProfileData = { ...this.originalProfileData, ...profileData };
 
       window.Notify.success('Profile updated successfully!');
     } catch (error) {
@@ -387,6 +399,7 @@ class SettingsPage {
 
   resetProfile() {
     // Reset form to original values
+    document.getElementById('display-name').value = this.originalProfileData.displayName;
     document.getElementById('first-name').value = this.originalProfileData.firstName;
     document.getElementById('last-name').value = this.originalProfileData.lastName;
     document.getElementById('phone').value = this.originalProfileData.phone;
@@ -410,16 +423,7 @@ class SettingsPage {
       // Save to localStorage
       localStorage.setItem('notificationPreferences', JSON.stringify(preferences));
 
-      // Optionally save to backend
-      const { data, error } = await window.API.fetchEdge('settings_update', {
-        method: 'POST',
-        body: JSON.stringify({ notifications: preferences })
-      });
-
-      if (error) {
-        throw error;
-      }
-
+      // TODO: Save to backend via REST API when endpoint is available
       window.Notify.success('Notification preferences saved!');
     } catch (error) {
       console.error('Failed to save notifications:', error);
@@ -776,20 +780,10 @@ class SettingsPage {
         return;
       }
 
-      const { data, error } = await window.API.fetchEdge('change_password', {
-        method: 'POST',
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword
-        })
-      });
+      // TODO: Implement password change via REST API when endpoint is available
+      window.Notify.error('Password change functionality not yet available');
+      return;
 
-      if (error) {
-        throw error;
-      }
-
-      modal.close();
-      window.Notify.success('Password updated successfully!');
     } catch (error) {
       console.error('Failed to update password:', error);
       window.Notify.error('Failed to update password');

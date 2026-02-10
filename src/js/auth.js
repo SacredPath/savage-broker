@@ -244,12 +244,40 @@ class AuthService {
       await this.ensureInitialized();
       const client = await this.supabaseClient.getClient();
 
+      // Prepare comprehensive profile data
+      const fullProfileData = {
+        id: userId,
+        email: profileData.email || '',
+        display_name: profileData.displayName || '',
+        first_name: profileData.firstName || '',
+        last_name: profileData.lastName || '',
+        phone: profileData.phone || '',
+        country: profileData.country || '',
+        email_verified: false, // Default false, only set by Back Office
+        role: 'user',
+        created_at: new Date().toISOString(),
+        
+        // Address information
+        address_line1: profileData.address?.address_line1 || '',
+        address_line2: profileData.address?.address_line2 || '',
+        city: profileData.address?.city || '',
+        state: profileData.address?.state || '',
+        postal_code: profileData.address?.postal_code || '',
+        
+        // Compliance information
+        new_to_investing: profileData.compliance?.new_to_investing || '',
+        pep: profileData.compliance?.pep || '',
+        pep_details: profileData.compliance?.pep_details || '',
+        occupation: profileData.compliance?.occupation || '',
+        dob: profileData.compliance?.dob || '',
+        
+        // Additional metadata
+        referral_code: profileData.referralCode || ''
+      };
+
       const { data, error } = await client
         .from('profiles')
-        .insert({
-          id: userId,
-          ...profileData
-        })
+        .insert(fullProfileData)
         .select()
         .single();
 
@@ -257,6 +285,7 @@ class AuthService {
         throw error;
       }
 
+      console.log('User profile created successfully:', data);
       return { success: true, data };
     } catch (error) {
       console.error('Failed to create user profile:', error);

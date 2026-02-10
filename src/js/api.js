@@ -32,37 +32,52 @@ class APIClient {
     }
   }
 
-  // Core Edge Function fetch with timeout, abort, and 1 retry
-  async fetchEdge(functionName, options = {}) {
+  // Direct Supabase REST API calls instead of edge functions
+  async fetchSupabase(table, options = {}) {
     const {
       method = 'GET',
       body,
-      timeout = 10000, // 10 second timeout
-      retries = 1, // Max 1 retry as per requirements
-      requireAuth = true
+      timeout = 10000,
+      retries = 1,
+      requireAuth = true,
+      filters = {},
+      select = '*'
     } = options;
 
-    const requestId = `${functionName}-${Date.now()}`;
+    let authHeader = '';
+    if (requireAuth) {
+      const { data: { session }, error } = await this.supabase.auth.getSession();
+      if (error || !session?.access_token) {
+        throw new Error('UNAUTHENTICATED');
+      }
+      authHeader = `Bearer ${session.access_token}`;
+    }
+
+    // Build query parameters for GET requests
+    let url = `${this.supabase.supabaseUrl}/rest/v1/${table}?select=${select}`;
+    
+    // Add filters to query
+    Object.entries(filters).forEach(([key, value]) => {
+      url += `&${key}=eq.${encodeURIComponent(value)}`;
+    });
+
+    const requestId = `${table}-${method}-${Date.now()}`;
     
     try {
-      // Check if request is already in progress
       if (this.requestQueue.has(requestId)) {
         return this.requestQueue.get(requestId);
       }
 
-      const requestPromise = this._executeRequest(functionName, {
+      const requestPromise = this._executeSupabaseRequest(url, {
         method,
         body,
         timeout,
-        requireAuth,
+        authHeader,
         retries
       });
 
       this.requestQueue.set(requestId, requestPromise);
-
       const result = await requestPromise;
-      
-      // Clean up queue
       this.requestQueue.delete(requestId);
       
       return result;
@@ -73,35 +88,22 @@ class APIClient {
     }
   }
 
-  async _executeRequest(functionName, options) {
-    const { method, body, timeout, requireAuth, retries } = options;
-    
+  async _executeSupabaseRequest(url, options) {
+    const { method, body, timeout, authHeader, retries } = options;
     let lastError;
     
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        // Get auth session if required
-        let authHeader = '';
-        if (requireAuth) {
-          const { data: { session }, error } = await this.supabase.auth.getSession();
-          if (error || !session?.access_token) {
-            throw new Error('UNAUTHENTICATED');
-          }
-          authHeader = `Bearer ${session.access_token}`;
-        }
-
-        // Create AbortController for timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-        const edgeFunctionUrl = `${this.supabase.supabaseUrl}/functions/v1/${functionName}`;
-        
-        const response = await fetch(edgeFunctionUrl, {
+        const response = await fetch(url, {
           method,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': authHeader,
-            ...options.headers
+            'apikey': this.supabase.supabaseKey,
+            'Prefer': 'return=representation'
           },
           body: body ? JSON.stringify(body) : undefined,
           signal: controller.signal
@@ -111,38 +113,28 @@ class APIClient {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `HTTP ${response.status}`);
+          throw new Error(errorData.message || errorData.error || `HTTP ${response.status}`);
         }
 
         const data = await response.json();
-        
-        // Validate response structure
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        return { data: data.data || data, error: null };
+        return { data, error: null };
 
       } catch (error) {
         lastError = error;
         
-        // Don't retry on authentication errors or aborts
         if (error.name === 'AbortError' || error.message === 'UNAUTHENTICATED') {
           throw error;
         }
 
-        // Log retry attempt
         if (attempt < retries) {
-          console.warn(`[APIClient] Retry ${attempt + 1}/${retries} for ${functionName}:`, error.message);
-          // Exponential backoff with jitter
+          console.warn(`[APIClient] Retry ${attempt + 1}/${retries} for ${url}:`, error.message);
           const delay = Math.min(1000 * Math.pow(2, attempt), 5000) + Math.random() * 1000;
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
     }
 
-    // All retries failed - map to user-friendly error
-    throw this._mapError(lastError, functionName);
+    throw this._mapError(lastError, 'supabase');
   }
 
   // Error mapping for user-friendly messages
@@ -214,10 +206,26 @@ class APIClient {
     }
   }
 
+  // Profile-specific methods using REST API
+  async getProfile(userId) {
+    return await this.fetchSupabase('profiles', {
+      filters: { id: userId },
+      select: '*'
+    });
+  }
+
+  async updateProfile(userId, profileData) {
+    return await this.fetchSupabase('profiles', {
+      method: 'PATCH',
+      body: profileData,
+      filters: { id: userId }
+    });
+  }
+
   // Balance fetching with canonical mapping
   async fetchBalances() {
     try {
-      const data = await this.fetchEdge('balances_get');
+      const data = await this.fetchSupabase('balances');
       return this.transformBalanceData(data);
     } catch (error) {
       console.error('Failed to fetch balances:', error);

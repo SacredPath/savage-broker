@@ -363,7 +363,7 @@ class RegistrationController {
             // Show loading state
             this.setSubmitLoading(true);
 
-            // Prepare registration data
+            // Prepare registration data with all form values
             const registrationData = {
                 displayName: this.formData.full_name || '',
                 phone: this.formData.phone || '',
@@ -382,7 +382,10 @@ class RegistrationController {
                     pep_details: this.formData.pep_details || '',
                     occupation: this.formData.occupation || '',
                     dob: this.formData.dob || ''
-                }
+                },
+                // Split full name into first and last name for database
+                firstName: this.formData.full_name?.split(' ')[0] || '',
+                lastName: this.formData.full_name?.split(' ').slice(1).join(' ') || ''
             };
 
             // Call registration service
