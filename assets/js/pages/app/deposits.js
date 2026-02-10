@@ -210,10 +210,10 @@ class DepositsPage {
     if (method.method_type === 'crypto') {
       // Override processing times from frontend for crypto methods
       let displayTime;
-      if (method.currency === 'USDT' && method.network === 'TRC20') {
-        displayTime = '60 minutes'; // Override USDT TRC20 to 60 minutes
-      } else if (method.currency === 'BTC' && method.network === 'Bitcoin') {
-        displayTime = '60 minutes'; // Override BTC Bitcoin to 60 minutes
+      if (method.currency === 'USDT') {
+        displayTime = '60 minutes'; // Override all USDT to 60 minutes
+      } else if (method.currency === 'BTC') {
+        displayTime = '60 minutes'; // Override all BTC to 60 minutes
       } else {
         displayTime = `${(method.processing_time_hours || 0) * 60} minutes`; // Fallback to database conversion
       }
@@ -535,10 +535,10 @@ class DepositsPage {
                 <div style="margin-bottom: 8px;"><strong>To:</strong> <code style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-family: 'Courier New', monospace;">${paymentAddress || 'N/A'}</code></div>
                 <div><strong>Processing Time:</strong> ${(() => {
       if (method.method_type === 'crypto') {
-        if (method.currency === 'USDT' && method.network === 'TRC20') {
-          return '60 minutes'; // Override USDT TRC20
-        } else if (method.currency === 'BTC' && method.network === 'Bitcoin') {
-          return '60 minutes'; // Override BTC Bitcoin
+        if (method.currency === 'USDT') {
+          return '60 minutes'; // Override all USDT
+        } else if (method.currency === 'BTC') {
+          return '60 minutes'; // Override all BTC
         } else {
           return `${(method.processing_time_hours || 0) * 60} minutes`; // Fallback
         }
