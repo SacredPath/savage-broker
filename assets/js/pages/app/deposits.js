@@ -210,12 +210,22 @@ class DepositsPage {
     if (method.method_type === 'crypto') {
       // Override processing times from frontend for crypto methods
       let displayTime;
+      console.log('DEBUG: Processing crypto method:', {
+        method_name: method.method_name,
+        currency: method.currency,
+        network: method.network,
+        processing_time_hours: method.processing_time_hours
+      });
+      
       if (method.currency === 'USDT') {
         displayTime = '60 minutes'; // Override all USDT to 60 minutes
+        console.log('DEBUG: USDT override applied - displayTime:', displayTime);
       } else if (method.currency === 'BTC') {
         displayTime = '60 minutes'; // Override all BTC to 60 minutes
+        console.log('DEBUG: BTC override applied - displayTime:', displayTime);
       } else {
         displayTime = `${(method.processing_time_hours || 0) * 60} minutes`; // Fallback to database conversion
+        console.log('DEBUG: Fallback applied - displayTime:', displayTime);
       }
       
       keyFeatures = [
@@ -224,6 +234,8 @@ class DepositsPage {
         `Min: ${method.currency === 'USDT' ? '₮' : '$'}${this.formatMoney(method.min_amount || 0, method.currency === 'USDT' ? 6 : 2)}`,
         `Processing: ${displayTime}`
       ];
+      
+      console.log('DEBUG: Final keyFeatures:', keyFeatures);
     } else if (method.method_type === 'ach') {
       keyFeatures = [
         `Bank: ${method.bank_name || 'Not set'}`,
@@ -534,15 +546,26 @@ class DepositsPage {
                 <div style="margin-bottom: 8px;"><strong>Method:</strong> ${method.method_name}</div>
                 <div style="margin-bottom: 8px;"><strong>To:</strong> <code style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-family: 'Courier New', monospace;">${paymentAddress || 'N/A'}</code></div>
                 <div><strong>Processing Time:</strong> ${(() => {
+      console.log('DEBUG: Confirmation dialog processing time for:', {
+        method_name: method.method_name,
+        method_type: method.method_type,
+        currency: method.currency,
+        processing_time_hours: method.processing_time_hours
+      });
+      
       if (method.method_type === 'crypto') {
         if (method.currency === 'USDT') {
+          console.log('DEBUG: Confirmation USDT override applied');
           return '60 minutes'; // Override all USDT
         } else if (method.currency === 'BTC') {
+          console.log('DEBUG: Confirmation BTC override applied');
           return '60 minutes'; // Override all BTC
         } else {
+          console.log('DEBUG: Confirmation fallback applied');
           return `${(method.processing_time_hours || 0) * 60} minutes`; // Fallback
         }
       } else {
+        console.log('DEBUG: Non-crypto method, using hours');
         return `${method.processing_time_hours || 24} hours`; // Non-crypto methods
       }
     })()}</div>
