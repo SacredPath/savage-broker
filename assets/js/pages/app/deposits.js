@@ -181,6 +181,14 @@ class DepositsPage {
   }
 
   createMethodCard(method) {
+    console.log('DEBUG: createMethodCard called with:', {
+      method_name: method.method_name,
+      method_type: method.method_type,
+      currency: method.currency,
+      network: method.network,
+      is_active: method.is_active
+    });
+    
     // Unique colors for each specific method
     const methodSpecificColors = {
       'USDT TRC20': { bg: '#10B981', border: '#059669', hover: '#047857' },
