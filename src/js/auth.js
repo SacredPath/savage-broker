@@ -108,7 +108,7 @@ class AuthService {
 
       console.log('Attempting signup with:', { email, passwordLength: password.length, profileData: registrationData });
 
-      // First, create user without any metadata to avoid database trigger issues
+      // Create user without any metadata to avoid database trigger issues
       const { data, error } = await client.auth.signUp({
         email,
         password,
@@ -128,7 +128,7 @@ class AuthService {
       if (data.user && registrationData) {
         console.log('Waiting for trigger to create initial profile...');
         
-        // Wait a moment for the trigger to create the initial profile
+        // Wait a moment for trigger to complete
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         console.log('Updating user profile with comprehensive data...');
@@ -164,14 +164,14 @@ class AuthService {
                     We've sent a verification email to <strong>${data.user.email}</strong>
                   </p>
                   <p class="text-sm text-gray-500">
-                    Please check your inbox and click the verification link to complete your registration.
+                    Please check your inbox and click on verification link to complete your registration.
                   </p>
                 </div>
                 <div class="text-left bg-gray-50 p-4 rounded-lg mb-4">
                   <p class="text-sm font-medium mb-2">What's next?</p>
                   <ul class="text-sm text-gray-600 space-y-1">
                     <li>✓ Check your email inbox</li>
-                    <li>✓ Click the verification link</li>
+                    <li>✓ Click on verification link</li>
                     <li>✓ Come back to login</li>
                     <li>Wait a few minutes and try again</li>
                   </ul>

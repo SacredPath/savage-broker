@@ -15,6 +15,9 @@ FROM information_schema.triggers
 WHERE trigger_schema IN ('public', 'auth')
 ORDER BY trigger_schema, event_object_table, trigger_name;
 
+-- Test the trigger function directly to see what it does
+-- SELECT public.handle_new_user();
+
 -- Check the problematic function that's causing registration to fail
 SELECT 
     routine_schema,
@@ -24,6 +27,20 @@ SELECT
 FROM information_schema.routines 
 WHERE routine_schema IN ('public', 'auth')
     AND routine_name = 'handle_new_user';
+
+-- Test the function directly to see if it has syntax errors
+-- SELECT public.handle_new_user(); -- This might fail if there are syntax issues
+
+-- Check if there are any other issues with the profiles table
+SELECT 
+    column_name,
+    data_type,
+    is_nullable,
+    column_default
+FROM information_schema.columns 
+WHERE table_schema = 'public'
+    AND table_name = 'profiles'
+ORDER BY ordinal_position;
 
 -- Check all functions that might be used by triggers
 SELECT 
@@ -63,7 +80,7 @@ SELECT
     phone,
     COUNT(*) as count
 FROM auth.users 
-WHERE phone = '08054545454'
+WHERE phone = '+203899576465'
 GROUP BY phone;
 
 -- Show all users with this phone number
@@ -74,7 +91,7 @@ SELECT
     created_at,
     email_confirmed_at
 FROM auth.users 
-WHERE phone = '08054545454';
+WHERE phone = '+203899576465';
 
 -- Check for any recent auth errors or issues
 SELECT 
@@ -85,3 +102,17 @@ SELECT
 FROM pg_indexes 
 WHERE schemaname = 'auth'
 ORDER BY tablename, indexname;
+
+-- Temporarily disable the problematic trigger to test registration
+-- ALTER TABLE auth.users DISABLE TRIGGER on_auth_user_created;
+
+-- Alternative: Create a simpler version of the function that just returns without doing anything
+/*
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Don't do anything to avoid conflicts
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql;
+*/

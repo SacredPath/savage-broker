@@ -80,9 +80,14 @@ class SettingsPage {
 
       // If profile data is missing, fetch it using REST API
       if (!this.currentUser.profile) {
+        console.log('Profile data missing, fetching from database...');
         const profileResult = await window.API.getProfile(this.currentUser.id);
-        if (profileResult.data && profileResult.data.length > 0) {
-          this.currentUser.profile = profileResult.data[0];
+        
+        if (profileResult.success && profileResult.data) {
+          this.currentUser.profile = profileResult.data;
+          console.log('Profile data loaded from database:', this.currentUser.profile);
+        } else {
+          console.warn('Failed to load profile from database:', profileResult.error);
         }
       }
     } catch (error) {
@@ -608,13 +613,11 @@ class SettingsPage {
       }
 
       const endpoint = methodId ? 'payout_methods_update' : 'payout_methods_upsert';
-      const { data, error } = await window.API.fetchEdge(endpoint, {
-        method: 'POST',
-        body: JSON.stringify({ 
-          method_id: methodId,
-          method_data: methodData 
-        })
-      });
+      const profileData = {
+        method_id: methodId,
+        method_data: methodData
+      };
+      const { data, error } = await window.API.updateProfile(this.currentUser.id, profileData);
 
       if (error) {
         throw error;
@@ -679,14 +682,10 @@ class SettingsPage {
       const method = this.payoutMethods.find(m => m.id === methodId);
       if (!method) return;
 
-      const { data, error } = await window.API.fetchEdge('payout_methods_update', {
-        method: 'POST',
-        body: JSON.stringify({
-          method_id: methodId,
-          method_data: {
-            is_active: !method.is_active
-          }
-        })
+      const { data, error } = await window.API.updateProfile(this.currentUser.id, {
+        method_data: {
+          is_active: !method.is_active
+        }
       });
 
       if (error) {
@@ -710,10 +709,7 @@ class SettingsPage {
         darkMode: document.getElementById('dark-mode').checked
       };
 
-      const { data, error } = await window.API.fetchEdge('settings_update', {
-        method: 'POST',
-        body: JSON.stringify({ security: securitySettings })
-      });
+      const { data, error } = await window.API.updateProfile(this.currentUser.id, securitySettings);
 
       if (error) {
         throw error;
