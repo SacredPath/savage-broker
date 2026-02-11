@@ -748,7 +748,14 @@ class DepositsPage {
 
   formatMoney(amount, decimals = 2) {
     if (amount === null || amount === undefined) return '0.00';
-    return parseFloat(amount).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const num = parseFloat(amount);
+    if (isNaN(num)) return '0.00';
+    
+    // Format with proper comma placement for thousands
+    const fixed = num.toFixed(decimals);
+    const parts = fixed.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
   }
 
   setupForms() {
