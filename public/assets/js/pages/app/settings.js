@@ -310,7 +310,7 @@ class SettingsPage {
   }
 
   formatPayoutMethod(method) {
-    const icon = this.getMethodIcon(method.type);
+    const icon = this.getMethodIcon(method.method_type);
     const statusClass = method.is_active ? 'status-active' : 'status-inactive';
     const statusText = method.is_active ? 'Active' : 'Inactive';
 
@@ -319,7 +319,7 @@ class SettingsPage {
         <div class="method-header">
           <div class="method-type">
             <div class="method-icon">${icon}</div>
-            <div class="method-name">${method.name}</div>
+            <div class="method-name">${method.method_name}</div>
           </div>
           <div class="method-status ${statusClass}">${statusText}</div>
         </div>
@@ -339,18 +339,20 @@ class SettingsPage {
 
   getMethodIcon(type) {
     const icons = {
-      bank: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>',
+      bank_transfer: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>',
       paypal: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10L5 19h4l1-4h3a5 5 0 0 0 5-5v0a5 5 0 0 0-5-5H7z"></path></svg>',
-      crypto: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M8 9h8M8 15h8"></path></svg>'
+      crypto_wallet: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M8 9h8M8 15h8"></path></svg>',
+      card: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line></svg>',
+      stripe: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10h18M7 15h10m-7-7h10"></path></svg>'
     };
-    return icons[type] || icons.bank;
+    return icons[type] || icons.bank_transfer;
   }
 
   formatMethodDetails(method) {
     let details = [];
     
-    switch (method.type) {
-      case 'bank':
+    switch (method.method_type) {
+      case 'bank_transfer':
         details = [
           `<div class="detail-item">
             <div class="detail-label">Account Name</div>
@@ -363,6 +365,14 @@ class SettingsPage {
           `<div class="detail-item">
             <div class="detail-label">Bank Name</div>
             <div class="detail-value">${method.details.bank_name}</div>
+          </div>`,
+          `<div class="detail-item">
+            <div class="detail-label">Routing Number</div>
+            <div class="detail-value">${method.details.routing_number}</div>
+          </div>`,
+          `<div class="detail-item">
+            <div class="detail-label">SWIFT Code</div>
+            <div class="detail-value">${method.details.swift_code || 'Not set'}</div>
           </div>`
         ];
         break;
@@ -378,7 +388,7 @@ class SettingsPage {
           </div>`
         ];
         break;
-      case 'crypto':
+      case 'crypto_wallet':
         details = [
           `<div class="detail-item">
             <div class="detail-label">Network</div>
@@ -547,8 +557,8 @@ class SettingsPage {
       console.log('📋 Profile data extracted:', profileData);
       
       // Step 3: Validate data
-      if (!profileData.first_name && !profileData.last_name) {
-        throw new Error('First name or last name is required');
+      if (!profileData.first_name || !profileData.last_name) {
+        throw new Error('First name and last name are required');
       }
       console.log('✅ Data validation passed');
       
@@ -566,69 +576,21 @@ class SettingsPage {
       }
       console.log('✅ API client available');
       
-      // Step 6: Perform database update or insert
+      // Step 6: Perform database update
       console.log('💾 Updating profile in database...');
-      
-      // Check if profile exists first
-      const { data: existingProfile, error: checkError } = await this.api.serviceClient
+      const { data, error } = await this.api.supabase
         .from('profiles')
-        .select('id, user_id')
-        .eq('user_id', userId)
+        .update(profileData)
+        .eq('id', userId)
+        .select()
         .single();
-      
-      if (checkError) {
-        console.error('❌ Profile check error:', checkError);
-        throw new Error('Failed to check existing profile');
+
+      if (error) {
+        console.error('❌ Database update error:', error);
+        throw error;
       }
       
-      if (existingProfile) {
-        // Profile exists, update it
-        console.log('✅ Existing profile found, updating...');
-        const { data, error: updateError } = await this.api.serviceClient
-          .from('profiles')
-          .update(profileData)
-          .eq('user_id', userId)
-          .select()
-          .single();
-        
-        if (updateError) {
-          console.error('❌ Database update error:', updateError);
-          throw new Error('Failed to update profile: ' + updateError.message);
-        }
-        
-        console.log('✅ Profile updated successfully:', data);
-      } else {
-        // Profile doesn't exist, insert it
-        console.log('✅ No existing profile found, inserting new profile...');
-        
-        // Prepare insert data with proper structure
-        const insertData = {
-          id: userId, // Use user_id as the profile id for consistency
-          user_id: userId,
-          email: profileData.email,
-          display_name: profileData.display_name || `${profileData.first_name} ${profileData.last_name || ''}`.trim(),
-          first_name: profileData.first_name,
-          last_name: profileData.last_name,
-          phone: profileData.phone,
-          country: profileData.country,
-          bio: profileData.bio,
-          kyc_status: 'not_submitted',
-          email_verified: false
-        };
-        
-        const { data, error: insertError } = await this.api.serviceClient
-          .from('profiles')
-          .insert(insertData)
-          .select()
-          .single();
-        
-        if (insertError) {
-          console.error('❌ Database insert error:', insertError);
-          throw new Error('Failed to create profile: ' + insertError.message);
-        }
-        
-        console.log('✅ Profile created successfully:', data);
-      }
+      console.log('✅ Database update successful:', data);
       
       // Step 7: Update local state
       if (this.currentUser) {
@@ -1063,13 +1025,13 @@ class SettingsPage {
             <div class="form-group">
               <label class="form-label">Method Type</label>
               <select class="form-input form-select" id="method-type" name="method-type" ${isEdit ? 'disabled' : ''}>
-                <option value="bank" ${method?.type === 'bank' ? 'selected' : ''}>Bank Account</option>
-                <option value="paypal" ${method?.type === 'paypal' ? 'selected' : ''}>PayPal</option>
-                <option value="crypto" ${method?.type === 'crypto' ? 'selected' : ''}>Cryptocurrency</option>
+                <option value="bank_transfer" ${method?.method_type === 'bank_transfer' ? 'selected' : ''}>Bank Account</option>
+                <option value="paypal" ${method?.method_type === 'paypal' ? 'selected' : ''}>PayPal</option>
+                <option value="crypto_wallet" ${method?.method_type === 'crypto_wallet' ? 'selected' : ''}>Cryptocurrency</option>
               </select>
             </div>
             
-            <div id="bank-fields" class="method-fields" style="${method?.type === 'bank' || !method ? '' : 'display: none;'}">
+            <div id="bank-fields" class="method-fields" style="${method?.method_type === 'bank_transfer' || !method ? '' : 'display: none;'}">
               <div class="form-group">
                 <label class="form-label">Account Name</label>
                 <input type="text" class="form-input" id="account-name" name="account-name" value="${method?.details?.account_name || ''}" required>
@@ -1088,14 +1050,14 @@ class SettingsPage {
               </div>
             </div>
             
-            <div id="paypal-fields" class="method-fields" style="${method?.type === 'paypal' ? '' : 'display: none;'}">
+            <div id="paypal-fields" class="method-fields" style="${method?.method_type === 'paypal' ? '' : 'display: none;'}">
               <div class="form-group">
                 <label class="form-label">PayPal Email</label>
                 <input type="email" class="form-input" id="paypal-email" name="paypal-email" value="${method?.details?.email || ''}" required>
               </div>
             </div>
             
-            <div id="crypto-fields" class="method-fields" style="${method?.type === 'crypto' ? '' : 'display: none;'}">
+            <div id="crypto-fields" class="method-fields" style="${method?.method_type === 'crypto_wallet' ? '' : 'display: none;'}">
               <div class="form-group">
                 <label class="form-label">Network</label>
                 <select class="form-input form-select" id="crypto-network" name="crypto-network">
@@ -1150,19 +1112,21 @@ class SettingsPage {
       const methodType = modal.querySelector('#method-type').value;
       
       let methodData = {
-        type: methodType,
-        name: this.getMethodName(methodType),
-        is_active: true
+        method_type: methodType,
+        currency: modal.querySelector('#method-currency').value,
+        is_active: true,
+        is_default: false
       };
 
       // Collect method-specific data
       switch (methodType) {
-        case 'bank':
+        case 'bank_transfer':
           methodData.details = {
             account_name: modal.querySelector('#account-name').value,
             account_number: modal.querySelector('#account-number').value,
             routing_number: modal.querySelector('#routing-number').value,
-            bank_name: modal.querySelector('#bank-name').value
+            bank_name: modal.querySelector('#bank-name').value,
+            swift_code: modal.querySelector('#swift-code').value
           };
           break;
         case 'paypal':
@@ -1171,11 +1135,13 @@ class SettingsPage {
             account_id: 'paypal_' + Date.now()
           };
           break;
-        case 'crypto':
+        case 'crypto_wallet':
           methodData.details = {
             network: modal.querySelector('#crypto-network').value,
             address: modal.querySelector('#wallet-address').value
           };
+          methodData.network = modal.querySelector('#crypto-network').value;
+          methodData.address = modal.querySelector('#wallet-address').value;
           break;
       }
 
@@ -1193,12 +1159,14 @@ class SettingsPage {
       // Add user_id to methodData
       methodData.user_id = userId;
 
-      console.log('💾 Saving payout method:', methodData);
+      console.log('💾 Saving payout method BEFORE any transformation:', methodData);
+      console.log('🔍 MethodType from form:', methodType);
+      console.log('🔍 Modal element:', modal);
 
       let data, error;
       if (methodId) {
         // Update existing method
-        ({ data, error } = await this.api.serviceClient
+        ({ data, error } = await this.api.supabase
           .from('payout_methods')
           .update(methodData)
           .eq('id', methodId)
@@ -1206,7 +1174,7 @@ class SettingsPage {
           .single());
       } else {
         // Create new method
-        ({ data, error } = await this.api.serviceClient
+        ({ data, error } = await this.api.supabase
           .from('payout_methods')
           .insert(methodData)
           .select()
@@ -1231,17 +1199,21 @@ class SettingsPage {
 
   validatePayoutMethod(methodData) {
     console.log('🔍 Validating payout method:', methodData);
+    console.log('🔍 methodData keys:', Object.keys(methodData));
+    console.log('🔍 methodData.type:', methodData.type);
+    console.log('🔍 methodData.method_type:', methodData.method_type);
+    console.log('🔍 methodData.name:', methodData.name);
     
     // Basic validation
-    if (!methodData.type || !methodData.details) {
-      console.error('❌ Missing type or details:', { type: methodData.type, details: methodData.details });
+    if (!methodData.method_type || !methodData.details || !methodData.currency) {
+      console.error('❌ Missing method_type, details, or currency:', { method_type: methodData.method_type, details: methodData.details, currency: methodData.currency });
       window.Notify.error('Please fill in all required fields');
       return false;
     }
 
     // Type-specific validation
-    switch (methodData.type) {
-      case 'bank':
+    switch (methodData.method_type) {
+      case 'bank_transfer':
         if (!methodData.details.account_name || !methodData.details.account_number || 
             !methodData.details.routing_number || !methodData.details.bank_name) {
           console.error('❌ Missing bank details:', methodData.details);
@@ -1256,7 +1228,7 @@ class SettingsPage {
           return false;
         }
         break;
-      case 'crypto':
+      case 'crypto_wallet':
         if (!methodData.details.network || !methodData.details.address) {
           console.error('❌ Missing crypto details:', methodData.details);
           window.Notify.error('Please fill in all cryptocurrency details');
@@ -1271,9 +1243,11 @@ class SettingsPage {
 
   getMethodName(type) {
     const names = {
-      bank: 'Bank Account',
+      bank_transfer: 'Bank Transfer',
       paypal: 'PayPal',
-      crypto: 'Cryptocurrency'
+      crypto_wallet: 'Cryptocurrency Wallet',
+      card: 'Card',
+      stripe: 'Stripe'
     };
     return names[type] || 'Unknown';
   }
@@ -1283,7 +1257,7 @@ class SettingsPage {
       const method = this.payoutMethods.find(m => m.id === methodId);
       if (!method) return;
 
-      const { data, error } = await this.api.serviceClient
+      const { data, error } = await this.api.supabase
         .from('payout_methods')
         .update({ is_active: !method.is_active })
         .eq('id', methodId)
