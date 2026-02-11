@@ -124,24 +124,21 @@ class AuthService {
 
       console.log('Supabase signup successful:', data);
 
-      // If user was created successfully, wait a moment for trigger to complete, then update profile
+      // If user was created successfully, create/update profile
       if (data.user && registrationData) {
-        console.log('Waiting for trigger to create initial profile...');
+        console.log('Creating/updating user profile...');
         
-        // Wait a moment for trigger to complete
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        console.log('Updating user profile with comprehensive data...');
-        const profileResult = await this.updateUserProfile(data.user.id, {
+        // Try to create profile first, then update if it exists
+        const profileResult = await this.createOrUpdateProfile(data.user.id, {
           ...registrationData,
           email: email
         });
         
         if (!profileResult.success) {
-          console.warn('Profile update failed but user was created:', profileResult.error);
+          console.warn('Profile creation/update failed but user was created:', profileResult.error);
           // Don't throw error here - user was created successfully
         } else {
-          console.log('User profile updated successfully');
+          console.log('User profile created/updated successfully');
         }
       }
 
@@ -292,6 +289,85 @@ class AuthService {
     } catch (error) {
       console.error('Failed to create user profile:', error);
       // Don't throw error here to prevent blocking signup
+      return { success: false, error };
+    }
+  }
+
+  // Create or update user profile (handles both cases)
+  async createOrUpdateProfile(userId, profileData) {
+    try {
+      await this.ensureInitialized();
+      const client = await this.supabaseClient.getClient();
+
+      // Prepare profile data with proper field mapping
+      const fullProfileData = {
+        id: userId, // Use id as primary key
+        user_id: userId, // Also include user_id for foreign key
+        email: profileData.email || '',
+        display_name: profileData.displayName || '',
+        first_name: profileData.firstName || '',
+        last_name: profileData.lastName || '',
+        phone: profileData.phone || '',
+        country: profileData.country || '',
+        email_verified: false, // Default false, only set by Back Office
+        role: 'user',
+        created_at: new Date().toISOString(),
+        
+        // Address information
+        address_line1: profileData.address?.address_line1 || '',
+        address_line2: profileData.address?.address_line2 || '',
+        city: profileData.address?.city || '',
+        state: profileData.address?.state || '',
+        postal_code: profileData.address?.postal_code || '',
+        
+        // Compliance information
+        new_to_investing: profileData.compliance?.new_to_investing || '',
+        pep: profileData.compliance?.pep || '',
+        pep_details: profileData.compliance?.pep_details || '',
+        occupation: profileData.compliance?.occupation || '',
+        dob: profileData.compliance?.dob || '',
+        
+        // Additional metadata
+        referral_code: profileData.referralCode || ''
+      };
+
+      // Try to insert first (create)
+      const { data, error } = await client
+        .from('profiles')
+        .insert(fullProfileData)
+        .select()
+        .single();
+
+      if (error) {
+        // If insert fails due to duplicate, try update
+        if (error.code === '23505' || error.message?.includes('duplicate')) {
+          console.log('Profile already exists, updating instead...');
+          
+          // Remove fields that shouldn't be updated
+          const { id, user_id, created_at, ...updateData } = fullProfileData;
+          
+          const { data: updateResult, error: updateError } = await client
+            .from('profiles')
+            .update(updateData)
+            .eq('id', userId)
+            .select()
+            .single();
+
+          if (updateError) {
+            throw updateError;
+          }
+
+          console.log('Profile updated successfully:', updateResult);
+          return { success: true, data: updateResult };
+        } else {
+          throw error;
+        }
+      }
+
+      console.log('Profile created successfully:', data);
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to create/update user profile:', error);
       return { success: false, error };
     }
   }
