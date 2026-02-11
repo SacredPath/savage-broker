@@ -9,6 +9,10 @@ import '/assets/js/_shared/app_init.js';
 import '/assets/js/components/usdt-purchase-modal.js';
 // Import USDT purchase modal styles
 import '/assets/css/usdt-purchase-modal.css';
+// Import PDF download service
+import '/assets/js/services/pdf-download-service.js';
+// Import PDF download service styles
+import '/assets/css/pdf-download-service.css';
 
 class SignalDetailPage {
   constructor() {
@@ -410,15 +414,36 @@ class SignalDetailPage {
         return;
       }
 
-      // For now, show a simple message
-      // TODO: Implement proper PDF download functionality
-      window.Notify.success('Download feature coming soon! PDF will be available after implementation.');
-      
-      console.log('Download clicked for signal:', this.signal.title);
+      // Use PDF download service
+      if (window.pdfDownloadService && this.signal) {
+        // Show PDF list in a modal or expand section
+        const pdfContainer = document.getElementById('pdf-downloads-container');
+        if (pdfContainer) {
+          pdfContainer.style.display = 'block';
+          window.pdfDownloadService.renderPDFList(this.signal.id, 'pdf-downloads-container');
+        } else {
+          // Create container if it doesn't exist
+          const container = document.createElement('div');
+          container.id = 'pdf-downloads-container';
+          container.className = 'pdf-downloads-modal';
+          container.innerHTML = `
+            <div class="pdf-modal-header">
+              <h4>📄 Signal PDFs</h4>
+              <button class="modal-close" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+            </div>
+            <div id="pdf-list-container"></div>
+          `;
+          
+          document.body.appendChild(container);
+          window.pdfDownloadService.renderPDFList(this.signal.id, 'pdf-list-container');
+        }
+      } else {
+        window.Notify.error('PDF download service not available');
+      }
       
     } catch (error) {
       console.error('Download failed:', error);
-      window.Notify.error(error.message || 'Failed to download signal');
+      window.Notify.error(error.message || 'Failed to open PDF downloads');
     }
   }
 
