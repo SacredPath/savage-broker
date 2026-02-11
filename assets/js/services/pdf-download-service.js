@@ -1,4 +1,5 @@
 // PDF Download Service for USDT-based signal purchases
+// Version: 1.0.3 - Fixed loading and variable issues
 
 // Global variable declaration
 let pdfDownloadService;
