@@ -200,7 +200,7 @@ class SignalDetailPage {
         
         <div class="signal-meta">
             <span class="signal-tag tag-category">${this.signal.category}</span>
-            <span class="signal-tag tag-risk ${this.signal.risk_level}">${this.signal.risk_level} risk</span>
+            <span class="signal-tag tag-risk ${this.getRiskLevel(this.signal.risk_rating || this.signal.risk_level)}">${this.getRiskLevel(this.signal.risk_rating || this.signal.risk_level)} risk</span>
             <span class="signal-tag">${this.signal.type === 'subscription' ? 'Subscription' : 'One-time'}</span>
         </div>
         
@@ -450,6 +450,21 @@ class SignalDetailPage {
     } catch (error) {
       console.error('Download failed:', error);
       window.Notify.error(error.message || 'Failed to open PDF downloads');
+    }
+  }
+
+  getRiskLevel(risk) {
+    // Normalize risk level for CSS classes
+    const riskLevel = (risk || '').toLowerCase();
+    switch (riskLevel) {
+      case 'low':
+        return 'low';
+      case 'medium':
+        return 'medium';
+      case 'high':
+        return 'high';
+      default:
+        return 'medium'; // Default fallback
     }
   }
 
