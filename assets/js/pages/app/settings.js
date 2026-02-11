@@ -1159,7 +1159,9 @@ class SettingsPage {
       // Add user_id to methodData
       methodData.user_id = userId;
 
-      console.log('💾 Saving payout method:', methodData);
+      console.log('💾 Saving payout method BEFORE any transformation:', methodData);
+      console.log('🔍 MethodType from form:', methodType);
+      console.log('🔍 Modal element:', modal);
 
       let data, error;
       if (methodId) {
@@ -1197,6 +1199,10 @@ class SettingsPage {
 
   validatePayoutMethod(methodData) {
     console.log('🔍 Validating payout method:', methodData);
+    console.log('🔍 methodData keys:', Object.keys(methodData));
+    console.log('🔍 methodData.type:', methodData.type);
+    console.log('🔍 methodData.method_type:', methodData.method_type);
+    console.log('🔍 methodData.name:', methodData.name);
     
     // Basic validation
     if (!methodData.method_type || !methodData.details || !methodData.currency) {
