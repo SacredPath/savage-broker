@@ -379,15 +379,6 @@ class SignalDetailPage {
         return;
       }
 
-      // Wait for USDT purchase modal to be available
-      let attempts = 0;
-      const maxAttempts = 10;
-      
-      while (!window.usdtPurchaseModal && attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-      }
-
       // Show USDT purchase modal
       if (window.usdtPurchaseModal && this.signal) {
         const signalData = {
@@ -400,7 +391,6 @@ class SignalDetailPage {
         
         window.usdtPurchaseModal.show(signalData);
       } else {
-        console.error('USDT purchase modal not available after', attempts, 'attempts');
         window.Notify.error('USDT purchase modal not available. Please refresh the page and try again.');
       }
 
