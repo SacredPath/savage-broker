@@ -2,8 +2,6 @@
  * API Client - Fixed Version with Shared Supabase Client
  */
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
 class APIClient {
   constructor() {
     this.supabase = null;
@@ -23,25 +21,18 @@ class APIClient {
     try {
       console.log('[APIClient] Initializing service client...');
       
-      // Hardcode API keys to prevent truncation issues
-      const supabaseUrl = 'https://ubycoeyutauzjgxbozcm.supabase.co';
-      const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVieWNvZXl1dGF1empneGJvemNtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTQwNjI5MiwiZXhwIjoyMDg0OTgyMjkyfQ.16X2ssw9RgDw4QhF4x1KvilcbMUpqn00gBP0Ed7MCHc';
-      
-      console.log('[APIClient] Service client URL:', supabaseUrl);
-      console.log('[APIClient] Service client key length:', serviceRoleKey.length);
-      console.log('[APIClient] Service client key preview:', serviceRoleKey.substring(0, 50) + '...');
-      
-      if (!supabaseUrl || !serviceRoleKey) {
-        console.warn('[APIClient] Service role credentials not available, using fallback');
+      // Use the shared Supabase client for service operations too
+      // This prevents multiple client instances
+      if (window.SupabaseClient) {
+        this.serviceClient = await window.SupabaseClient.getClient();
+        console.log('[APIClient] Using shared Supabase client for service operations');
+      } else if (window.supabase) {
+        this.serviceClient = await window.supabase.getClient();
+        console.log('[APIClient] Using legacy Supabase client for service operations');
+      } else {
+        console.warn('[APIClient] No Supabase client available for service operations');
         return;
       }
-      
-      this.serviceClient = createClient(supabaseUrl, serviceRoleKey, {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false
-        }
-      });
       
       console.log('[APIClient] Service client initialized successfully');
     } catch (error) {
