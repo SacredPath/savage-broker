@@ -120,15 +120,13 @@ class HomePage {
       // Get active signals count from database
       let activeSignals = 0;
       try {
-        const { data: signalPurchases, error: signalError } = await window.API.supabase
-          .from('signal_purchases')
+        const { data: signalData, error: signalError } = await window.API.supabase
+          .from('signals')
           .select('id')
-          .eq('user_id', userId)
-          .eq('status', 'completed')
-          .gt('access_expires_at', new Date().toISOString());
+          .eq('status', 'active');
 
         if (!signalError) {
-          activeSignals = signalPurchases?.length || 0;
+          activeSignals = signalData?.length || 0;
         }
       } catch (signalError) {
         console.warn('[HomePage] Could not load active signals:', signalError.message);
@@ -256,28 +254,27 @@ class HomePage {
 
       // Load recent signal purchases
       try {
-        const { data: signalPurchases, error: signalError } = await window.API.supabase
-          .from('signal_purchases')
-          .select('amount, currency, created_at, signal_id')
-          .eq('user_id', userId)
-          .eq('status', 'completed')
+        const { data: signalData, error: signalError } = await window.API.supabase
+          .from('signals')
+          .select('title, price, created_at, category, risk_level')
+          .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(5);
 
-        if (!signalError && signalPurchases) {
-          signalPurchases.forEach(purchase => {
+        if (!signalError && signalData) {
+          signalData.forEach(signal => {
             activity.push({
-              type: 'signal_purchase',
-              description: 'Signal purchased',
-              amount: purchase.amount,
-              currency: purchase.currency,
-              timestamp: purchase.created_at,
-              signal_id: purchase.signal_id
+              type: 'signal',
+              title: signal.title,
+              description: `${signal.category} - ${signal.risk_level} risk`,
+              amount: signal.price,
+              currency: 'USD',
+              timestamp: signal.created_at
             });
           });
         }
       } catch (signalError) {
-        console.warn('[HomePage] Could not load signal purchases:', signalError.message);
+        console.warn('[HomePage] Could not load signals:', signalError.message);
       }
 
       // Sort by timestamp (most recent first)
