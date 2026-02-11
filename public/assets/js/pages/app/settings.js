@@ -1082,6 +1082,7 @@ class SettingsPage {
                   <option value="trc20" ${method?.details?.network === 'trc20' ? 'selected' : ''}>TRC20 (USDT)</option>
                   <option value="erc20" ${method?.details?.network === 'erc20' ? 'selected' : ''}>ERC20 (USDT)</option>
                   <option value="bep20" ${method?.details?.network === 'bep20' ? 'selected' : ''}>BEP20 (USDT)</option>
+                  <option value="btc" ${method?.details?.network === 'btc' ? 'selected' : ''}>BTC (Bitcoin)</option>
                 </select>
               </div>
               <div class="form-group">
