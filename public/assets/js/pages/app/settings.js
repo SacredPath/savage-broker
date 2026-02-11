@@ -1177,12 +1177,13 @@ class SettingsPage {
           console.log('🔍 Wallet address element:', walletAddress);
           console.log('🔍 Wallet address value:', walletAddress?.value);
           
+          const networkValue = cryptoNetwork?.value || '';
+          const addressValue = walletAddress?.value || '';
+          
           methodData.details = {
-            network: cryptoNetwork?.value,
-            address: walletAddress?.value
+            network: networkValue,
+            address: addressValue
           };
-          methodData.network = cryptoNetwork?.value;
-          methodData.address = walletAddress?.value;
           break;
       }
 
