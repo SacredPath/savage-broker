@@ -51,6 +51,9 @@ class TiersPage {
       this.renderTiers();
       this.setupModal();
       
+      // Setup button event listeners
+      this.setupButtonEventListeners();
+      
       console.log('Tiers page setup complete');
     } catch (error) {
       console.error('Error setting up tiers page:', error);
@@ -338,12 +341,17 @@ class TiersPage {
             </div>
           ` : ''}
           
-          <button class="tier-action" onclick="window.tiersPage.handleTierAction('${tier.id}')">
+          <button class="tier-action" data-tier-id="${tier.id}">
             ${isCurrentTier ? 'View Details' : (isEligible ? 'Invest Now' : 'Upgrade')}
           </button>
         </div>
       `;
     }).join('');
+
+    // Add direct click listeners to buttons after rendering
+    setTimeout(() => {
+      this.attachDirectButtonListeners();
+    }, 100);
   }
 
   calculateTotalEquity() {
@@ -371,23 +379,73 @@ class TiersPage {
   }
 
   handleTierAction(tierId) {
+    console.log('handleTierAction called with tierId:', tierId);
+    
     const tier = this.tiers.find(t => t.id === tierId);
-    if (!tier) return;
+    if (!tier) {
+      console.error('Tier not found for ID:', tierId);
+      return;
+    }
 
     const currentTierId = this.getCurrentTierId();
     const userTotalEquity = this.calculateTotalEquity();
     const isCurrentTier = tier.id === currentTierId;
+    const isEligible = userTotalEquity >= tier.min_amount;
+
+    console.log('Tier action details:', {
+      tierId,
+      tierName: tier.name,
+      currentTierId,
+      userTotalEquity,
+      isCurrentTier,
+      isEligible
+    });
 
     if (isCurrentTier) {
       // View Details - show current tier details
+      console.log('Opening tier modal for current tier:', tier.name);
       this.openTierModal(tierId);
     } else if (userTotalEquity >= tier.min_amount) {
       // Invest Now - user qualifies for this tier
+      console.log('Opening tier modal for investment:', tier.name);
       this.openTierModal(tierId);
     } else {
       // Upgrade - user needs to deposit more
+      console.log('Initiating upgrade flow for tier:', tier.name);
       this.initiateUpgrade(tierId);
     }
+  }
+
+  attachDirectButtonListeners() {
+    // Add direct click listeners to all tier action buttons
+    const buttons = document.querySelectorAll('.tier-action');
+    console.log('Found tier buttons:', buttons.length);
+    
+    buttons.forEach((button, index) => {
+      const tierId = button.dataset.tierId;
+      console.log(`Adding listener to button ${index + 1} for tier ${tierId}`);
+      
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(`Direct button click: Tier ${tierId}`);
+        this.handleTierAction(tierId);
+      });
+      
+      // Visual feedback
+      button.addEventListener('mouseenter', () => {
+        button.style.transform = 'scale(1.05)';
+      });
+      
+      button.addEventListener('mouseleave', () => {
+        button.style.transform = 'scale(1)';
+      });
+    });
+  }
+
+  setupButtonEventListeners() {
+    // Attach direct click listeners to tier action buttons
+    this.attachDirectButtonListeners();
   }
 
   setupModal() {

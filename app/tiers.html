@@ -189,10 +189,22 @@
         /* Ensure buttons are clickable and prevent card interference */
         .tier-action {
             pointer-events: auto !important;
+            position: relative !important;
+            z-index: 100 !important;
         }
         
-        .tier-card * {
+        .tier-card {
             pointer-events: auto;
+        }
+        
+        .tier-card > *:not(.tier-action) {
+            pointer-events: auto;
+        }
+        
+        /* Prevent card from capturing button clicks */
+        .tier-card:hover .tier-action {
+            transform: scale(1.02);
+            z-index: 101 !important;
         }
         
         /* Tier Modal */
