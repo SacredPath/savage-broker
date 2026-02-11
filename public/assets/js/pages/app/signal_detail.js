@@ -381,7 +381,7 @@ class SignalDetailPage {
       window.Notify.success('Purchase completed! Signal access activated.');
 
       // Update UI to show purchased state
-      this.renderSignalDetails();
+      this.renderSignal();
       this.checkPurchaseBlock();
 
     } catch (error) {
