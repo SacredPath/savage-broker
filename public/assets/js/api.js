@@ -719,7 +719,6 @@ class APIClient {
                   display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || 'User',
                   phone: user.phone || '',
                   email_verified: user.email_confirmed_at ? true : false,
-                  role: 'user',
                   created_at: new Date().toISOString()
                 })
                 .select()

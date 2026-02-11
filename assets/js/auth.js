@@ -310,7 +310,6 @@ class AuthService {
         phone: profileData.phone || '',
         country: profileData.country || '',
         email_verified: false, // Default false, only set by Back Office
-        role: 'user',
         created_at: new Date().toISOString(),
         
         // Address information
