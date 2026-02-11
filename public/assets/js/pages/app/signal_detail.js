@@ -363,10 +363,8 @@ class SignalDetailPage {
       const accessData = {
         user_id: userId,
         signal_id: this.signalUUID,
-        status: 'active',
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + (this.signal.access_days * 24 * 60 * 60 * 1000)).toISOString(),
-        price_paid: this.signal.price_usdt || this.signal.price
+        starts_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + (this.signal.access_days * 24 * 60 * 60 * 1000)).toISOString()
       };
 
       const { data, error } = await window.API.supabase
