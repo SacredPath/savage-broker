@@ -120,7 +120,7 @@ class HomePage {
       // Get active signals count from database
       let activeSignals = 0;
       try {
-        const { data: signalPurchases, error: signalError } = await window.API.serviceClient
+        const { data: signalPurchases, error: signalError } = await window.API.supabase
           .from('signal_purchases')
           .select('id')
           .eq('user_id', userId)
@@ -204,7 +204,7 @@ class HomePage {
 
       // Load recent deposits
       try {
-        const { data: deposits, error: depositError } = await window.API.serviceClient
+        const { data: deposits, error: depositError } = await window.API.supabase
           .from('transactions')
           .select('amount, currency, created_at, status')
           .eq('user_id', userId)
@@ -230,7 +230,7 @@ class HomePage {
 
       // Load recent withdrawals
       try {
-        const { data: withdrawals, error: withdrawalError } = await window.API.serviceClient
+        const { data: withdrawals, error: withdrawalError } = await window.API.supabase
           .from('transactions')
           .select('amount, currency, created_at, status')
           .eq('user_id', userId)
@@ -256,7 +256,7 @@ class HomePage {
 
       // Load recent signal purchases
       try {
-        const { data: signalPurchases, error: signalError } = await window.API.serviceClient
+        const { data: signalPurchases, error: signalError } = await window.API.supabase
           .from('signal_purchases')
           .select('amount, currency, created_at, signal_id')
           .eq('user_id', userId)
