@@ -13,6 +13,7 @@ class SignalDetailPage {
     this.userAccess = null;
     this.userPositions = [];
     this.signalId = null;
+    this.api = window.API; // Initialize API client
     this.init();
   }
 
