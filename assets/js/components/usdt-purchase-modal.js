@@ -52,7 +52,14 @@ class USDTPurchaseModal {
               
               <div class="transaction-input">
                 <label for="tx-hash">Transaction Hash (TxID):</label>
-                <input type="text" id="tx-hash" placeholder="Enter your transaction hash..." />
+                <div class="input-group">
+                  <input type="text" id="tx-hash" placeholder="Paste your transaction hash here..." />
+                  <button class="paste-btn" onclick="usdtPurchaseModal.pasteTransactionHash()" title="Paste from clipboard">📋 Paste</button>
+                </div>
+                <div class="input-help">
+                  <small>📌 After sending USDT, copy the transaction hash from your wallet and paste it here</small>
+                  <small>🔍 We'll automatically confirm your transaction on the blockchain</small>
+                </div>
               </div>
               
               <div class="confirmation-status" id="confirmation-status" style="display: none;">
@@ -129,6 +136,31 @@ class USDTPurchaseModal {
     setTimeout(() => {
       copyBtn.textContent = originalText;
     }, 2000);
+  }
+
+  async pasteTransactionHash() {
+    try {
+      // Try to read from clipboard
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        const txHashInput = document.getElementById('tx-hash');
+        txHashInput.value = text.trim();
+        
+        // Show feedback
+        const pasteBtn = document.querySelector('.paste-btn');
+        const originalText = pasteBtn.textContent;
+        pasteBtn.textContent = '✅ Pasted!';
+        setTimeout(() => {
+          pasteBtn.textContent = originalText;
+        }, 2000);
+        
+        // Trigger validation
+        txHashInput.dispatchEvent(new Event('input'));
+      }
+    } catch (error) {
+      console.error('Failed to paste from clipboard:', error);
+      window.Notify.error('Failed to paste from clipboard. Please paste manually.');
+    }
   }
 
   async startConfirmation() {

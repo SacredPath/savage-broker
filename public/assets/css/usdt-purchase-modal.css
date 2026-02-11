@@ -184,8 +184,14 @@
   font-size: 14px;
 }
 
+#usdt-purchase-modal .input-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 #usdt-purchase-modal .transaction-input input {
-  width: 100%;
+  flex: 1;
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -193,6 +199,43 @@
   color: var(--text-primary);
   font-family: monospace;
   font-size: 12px;
+}
+
+#usdt-purchase-modal .paste-btn {
+  padding: 12px 16px;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+#usdt-purchase-modal .paste-btn:hover {
+  background: var(--secondary-dark);
+  transform: translateY(-1px);
+}
+
+#usdt-purchase-modal .input-help {
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--surface);
+  border-radius: 6px;
+  border-left: 3px solid var(--info);
+}
+
+#usdt-purchase-modal .input-help small {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+#usdt-purchase-modal .input-help small:last-child {
+  margin-bottom: 0;
 }
 
 #usdt-purchase-modal .confirmation-status {
@@ -307,6 +350,11 @@
   
   #usdt-purchase-modal .address-container {
     flex-direction: column;
+  }
+  
+  #usdt-purchase-modal .input-group {
+    flex-direction: column;
+    align-items: stretch;
   }
   
   #usdt-purchase-modal .modal-footer {
