@@ -51,6 +51,12 @@
             margin-bottom: 32px;
         }
         
+        .tier-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
         .tier-card {
             background: var(--surface);
             border: 2px solid var(--border);
@@ -65,10 +71,6 @@
             border-color: var(--primary);
             transform: translateY(-4px);
             box-shadow: 0 8px 32px rgba(0, 212, 170, 0.2);
-        }
-        
-        .tier-card:hover .tier-action {
-            transform: scale(1.02);
         }
         
         .tier-card.current {
@@ -172,46 +174,17 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            position: relative;
-            z-index: 10;
         }
         
         .tier-action:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
         }
         
         .tier-action:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-        }
-        
-        /* Ensure buttons are clickable and prevent card interference */
-        .tier-action {
-            pointer-events: auto !important;
-            position: relative !important;
-            z-index: 1000 !important;
-            cursor: pointer !important;
-        }
-        
-        .tier-card {
-            pointer-events: auto;
-        }
-        
-        .tier-card > *:not(.tier-action) {
-            pointer-events: auto;
-        }
-        
-        /* Prevent card from capturing button clicks */
-        .tier-card:hover .tier-action {
-            transform: scale(1.02);
-            z-index: 1001 !important;
-        }
-        
-        /* Ensure button is always on top */
-        .tier-action:focus {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-            z-index: 1002 !important;
+            transform: none;
         }
         
         /* Tier Modal */

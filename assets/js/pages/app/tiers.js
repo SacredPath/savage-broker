@@ -298,48 +298,50 @@ class TiersPage {
       const isEligible = userTotalEquity >= tier.min_amount;
       
       return `
-        <div class="tier-card ${isCurrentTier ? 'current' : ''}" data-tier-id="${tier.id}">
-          <div class="tier-header">
-            <div class="tier-name">${tier.name}</div>
-            <div class="tier-range">
-              ₮${this.formatMoney(tier.min_amount, 2)}${tier.max_amount ? ` - ₮${this.formatMoney(tier.max_amount, 2)}` : '+'}
+        <div class="tier-container">
+          <div class="tier-card ${isCurrentTier ? 'current' : ''}" data-tier-id="${tier.id}">
+            <div class="tier-header">
+              <div class="tier-name">${tier.name}</div>
+              <div class="tier-range">
+                ₮${this.formatMoney(tier.min_amount, 2)}${tier.max_amount ? ` - ₮${this.formatMoney(tier.max_amount, 2)}` : '+'}
+              </div>
             </div>
+            
+            <div class="tier-description">
+              <p>${tier.description || 'Investment tier with competitive returns.'}</p>
+            </div>
+            
+            <div class="tier-stats">
+              <div class="tier-stat">
+                <div class="tier-stat-value">${tier.investment_period_days}</div>
+                <div class="tier-stat-label">Days</div>
+              </div>
+              <div class="tier-stat">
+                <div class="tier-stat-value">${(tier.daily_roi * 100).toFixed(2)}%</div>
+                <div class="tier-stat-label">Daily ROI</div>
+              </div>
+              <div class="tier-stat">
+                <div class="tier-stat-value">${((tier.daily_roi * 100) * tier.investment_period_days).toFixed(1)}%</div>
+                <div class="tier-stat-label">Total ROI</div>
+              </div>
+            </div>
+            
+            ${tier.features && tier.features.length > 0 ? `
+              <div class="tier-features">
+                <h4>Features</h4>
+                <ul class="features-list">
+                  ${tier.features.map(feature => `
+                    <li class="feature-item">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      ${feature}
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+            ` : ''}
           </div>
-          
-          <div class="tier-description">
-            <p>${tier.description || 'Investment tier with competitive returns.'}</p>
-          </div>
-          
-          <div class="tier-stats">
-            <div class="tier-stat">
-              <div class="tier-stat-value">${tier.investment_period_days}</div>
-              <div class="tier-stat-label">Days</div>
-            </div>
-            <div class="tier-stat">
-              <div class="tier-stat-value">${(tier.daily_roi * 100).toFixed(2)}%</div>
-              <div class="tier-stat-label">Daily ROI</div>
-            </div>
-            <div class="tier-stat">
-              <div class="tier-stat-value">${((tier.daily_roi * 100) * tier.investment_period_days).toFixed(1)}%</div>
-              <div class="tier-stat-label">Total ROI</div>
-            </div>
-          </div>
-          
-          ${tier.features && tier.features.length > 0 ? `
-            <div class="tier-features">
-              <h4>Features</h4>
-              <ul class="features-list">
-                ${tier.features.map(feature => `
-                  <li class="feature-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    ${feature}
-                  </li>
-                `).join('')}
-              </ul>
-            </div>
-          ` : ''}
           
           <button class="tier-action" data-tier-id="${tier.id}">
             ${isCurrentTier ? 'View Details' : (isEligible ? 'Invest Now' : 'Upgrade')}
