@@ -156,7 +156,6 @@ class SignalsPage {
         .from('signal_access')
         .select('*')
         .eq('user_id', userId)
-        .eq('status', 'active')
         .gt('expires_at', new Date().toISOString());
       
       if (error) {
@@ -389,6 +388,8 @@ class SignalsPage {
   }
 
   getDurationText(duration) {
+    if (!duration) return 'Unknown duration';
+    
     const days = typeof duration === 'number' ? duration : parseInt(duration.toString().split('_')[0]) || duration;
     
     switch (days) {
