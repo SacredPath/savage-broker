@@ -7,12 +7,8 @@
 import '/assets/js/_shared/app_init.js';
 // Import USDT purchase modal
 import '/assets/js/components/usdt-purchase-modal.js';
-// Import USDT purchase modal styles
-import '/assets/css/usdt-purchase-modal.css';
 // Import PDF download service
 import '/assets/js/services/pdf-download-service.js';
-// Import PDF download service styles
-import '/assets/css/pdf-download-service.css';
 
 class SignalDetailPage {
   constructor() {
