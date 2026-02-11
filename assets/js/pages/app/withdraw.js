@@ -80,7 +80,7 @@ class WithdrawPage {
       }
 
       // Load user profile from database
-      const { data, error } = await window.API.serviceClient
+      const { data, error } = await window.API.supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
@@ -143,7 +143,7 @@ class WithdrawPage {
         ...(userMetaData.avatar_url && { avatar_url: userMetaData.avatar_url })
       };
       
-      const { data, error } = await window.API.serviceClient
+      const { data, error } = await window.API.supabase
         .from('profiles')
         .insert(profileData)
         .select()
@@ -166,7 +166,7 @@ class WithdrawPage {
     try {
       console.log('Loading email verification status for withdrawal validation...');
       
-      const { data, error } = await window.API.serviceClient
+      const { data, error } = await window.API.supabase
         .from('profiles')
         .select('email_verified, email_verified_at, email_verified_by, email_verification_notes')
         .eq('user_id', userId)

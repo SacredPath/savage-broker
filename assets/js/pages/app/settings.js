@@ -578,7 +578,7 @@ class SettingsPage {
       
       // Step 6: Perform database update
       console.log('💾 Updating profile in database...');
-      const { data, error } = await this.api.serviceClient
+      const { data, error } = await this.api.supabase
         .from('profiles')
         .update(profileData)
         .eq('id', userId)
