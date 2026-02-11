@@ -1169,12 +1169,19 @@ class SettingsPage {
           };
           break;
         case 'crypto_wallet':
+          const cryptoNetwork = modal.querySelector('#crypto-network');
+          const walletAddress = modal.querySelector('#wallet-address');
+          console.log('🔍 Crypto network element:', cryptoNetwork);
+          console.log('🔍 Crypto network value:', cryptoNetwork?.value);
+          console.log('🔍 Wallet address element:', walletAddress);
+          console.log('🔍 Wallet address value:', walletAddress?.value);
+          
           methodData.details = {
-            network: modal.querySelector('#crypto-network').value,
-            address: modal.querySelector('#wallet-address').value
+            network: cryptoNetwork?.value,
+            address: walletAddress?.value
           };
-          methodData.network = modal.querySelector('#crypto-network').value;
-          methodData.address = modal.querySelector('#wallet-address').value;
+          methodData.network = cryptoNetwork?.value;
+          methodData.address = walletAddress?.value;
           break;
       }
 
