@@ -51,6 +51,9 @@ class TiersPage {
       this.renderTiers();
       this.setupModal();
       
+      // Setup button event listeners
+      this.setupButtonEventListeners();
+      
       console.log('Tiers page setup complete');
     } catch (error) {
       console.error('Error setting up tiers page:', error);
@@ -341,6 +344,43 @@ class TiersPage {
         </div>
       `;
     }).join('');
+
+    // Add direct click listeners to buttons after rendering
+    setTimeout(() => {
+      this.attachDirectButtonListeners();
+    }, 100);
+  }
+
+  setupButtonEventListeners() {
+    // Attach direct click listeners to tier action buttons
+    this.attachDirectButtonListeners();
+  }
+
+  attachDirectButtonListeners() {
+    // Add direct click listeners to all tier action buttons
+    const buttons = document.querySelectorAll('.tier-action');
+    console.log('Found tier buttons:', buttons.length);
+    
+    buttons.forEach((button, index) => {
+      const tierId = button.dataset.tierId;
+      console.log(`Adding listener to button ${index + 1} for tier ${tierId}`);
+      
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(`Direct button click: Tier ${tierId}`);
+        this.handleTierAction(tierId);
+      });
+      
+      // Visual feedback
+      button.addEventListener('mouseenter', () => {
+        button.style.transform = 'translateY(-2px) scale(1.02)';
+      });
+      
+      button.addEventListener('mouseleave', () => {
+        button.style.transform = 'translateY(0) scale(1)';
+      });
+    });
   }
 
   calculateTotalEquity() {
