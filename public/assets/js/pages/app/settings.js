@@ -1109,7 +1109,21 @@ class SettingsPage {
   async savePayoutMethod(methodId = '') {
     try {
       const modal = document.querySelector('dialog[open]');
-      const methodType = modal.querySelector('#method-type').value;
+      if (!modal) {
+        console.error('❌ No open modal found');
+        window.Notify.error('Modal not found. Please try again.');
+        return;
+      }
+      
+      const methodTypeSelect = modal.querySelector('#method-type');
+      if (!methodTypeSelect) {
+        console.error('❌ Method type select not found in modal');
+        window.Notify.error('Form not loaded properly. Please try again.');
+        return;
+      }
+      
+      const methodType = methodTypeSelect.value;
+      console.log('🔍 Method type found:', methodType);
       
       let methodData = {
         method_type: methodType,
