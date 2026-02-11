@@ -135,8 +135,30 @@ class SignalDetailPage {
 
   async loadUserAccess() {
     try {
-      // User access is already loaded in loadSignal() via the REST API
-      // No separate call needed
+      // Get current user ID
+      const userId = await this.api.getCurrentUserId();
+      if (!userId) {
+        console.log('No user ID found, skipping user access loading');
+        this.userAccess = null;
+        return;
+      }
+
+      // Load user signal access from signal_access table
+      const { data, error } = await window.API.supabase
+        .from('signal_access')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('signal_id', this.signalId)
+        .gt('expires_at', new Date().toISOString())
+        .limit(1);
+
+      if (error) {
+        console.error('Database error loading user access:', error);
+        this.userAccess = null;
+        return;
+      }
+
+      this.userAccess = data && data.length > 0 ? data[0] : null;
       console.log('User access loaded:', this.userAccess ? 'found' : 'not found');
     } catch (error) {
       console.error('Failed to load user access:', error);
@@ -362,7 +384,7 @@ class SignalDetailPage {
 
       const accessData = {
         user_id: userId,
-        signal_id: this.signalUUID,
+        signal_id: this.signalId,
         starts_at: new Date().toISOString(),
         expires_at: new Date(Date.now() + (this.signal.access_days * 24 * 60 * 60 * 1000)).toISOString()
       };
@@ -382,7 +404,6 @@ class SignalDetailPage {
 
       // Update UI to show purchased state
       this.renderSignal();
-      this.checkPurchaseBlock();
 
     } catch (error) {
       console.error('Purchase failed:', error);
