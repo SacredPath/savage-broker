@@ -7,8 +7,6 @@
 import '/assets/js/_shared/app_init.js';
 // Import USDT purchase modal
 import '/assets/js/components/usdt-purchase-modal.js';
-// Import PDF download service
-import '/assets/js/services/pdf-download-service.js';
 
 class SignalDetailPage {
   constructor() {
@@ -420,7 +418,7 @@ class SignalDetailPage {
         return;
       }
 
-      // Use PDF download service with safety check
+      // Use PDF download service
       if (window.pdfDownloadService && this.signal) {
         // Show PDF list in a modal or expand section
         const pdfContainer = document.getElementById('pdf-downloads-container');

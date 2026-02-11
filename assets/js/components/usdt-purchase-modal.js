@@ -365,7 +365,7 @@ class USDTPurchaseModal {
   }
 }
 
-// Initialize modal globally and attach to window
+// Global variable declaration
 let usdtPurchaseModal;
 
 // Function to initialize modal
