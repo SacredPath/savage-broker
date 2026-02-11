@@ -117,7 +117,7 @@ class SignalsPage {
       // Load signals from signals table using shared client
       const { data, error } = await window.API.supabase
         .from('signals')
-        .select("id,title,category,risk_level,description,price,access_duration,type,status,created_at")
+        .select("id,title,category,risk_rating,description,price_usdt,access_days,type,status,created_at")
         .eq('status', 'active')
         .order('created_at', { ascending: false });
       
@@ -129,7 +129,9 @@ class SignalsPage {
       
       this.signals = (data || []).map(s => ({
         ...s,
-        price_usdt: parseFloat(s.price_usdt) || 0
+        price: parseFloat(s.price_usdt) || 0,
+        risk_rating: s.risk_rating,
+        access_days: s.access_days
       }));
       
       console.log('Signals loaded from database:', this.signals.length, 'signals');
