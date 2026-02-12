@@ -30,8 +30,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
 (
     'Tier 1',
     'Entry-level investment tier with competitive returns.',
+    150.00,
     1000.00,
-    9999.99,
     30,
     0.005, -- 0.5% daily
     1,
@@ -41,8 +41,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
 (
     'Tier 2',
     'Intermediate tier with enhanced returns and features.',
+    1000.01,
     10000.00,
-    49999.99,
     60,
     0.008, -- 0.8% daily
     2,
@@ -52,8 +52,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
 (
     'Tier 3',
     'Advanced tier for serious investors.',
-    50000.00,
-    99999.99,
+    10000.01,
+    20000.00,
     90,
     0.012, -- 1.2% daily
     3,
@@ -63,8 +63,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
 (
     'Tier 4',
     'Professional tier with high returns.',
-    100000.00,
-    499999.99,
+    20000.01,
+    50000.00,
     120,
     0.015, -- 1.5% daily
     4,
@@ -74,8 +74,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
 (
     'Tier 5',
     'Elite tier for maximum returns and exclusive benefits.',
-    500000.00,
-    NULL, -- Unlimited
+    50000.01,
+    10000000.00,
     180,
     0.02, -- 2.0% daily
     5,
