@@ -6,13 +6,13 @@
     <title>Back Office Login - Broker</title>
     
     <!-- Icons -->
-    <link rel="icon" href="/Savage-Broker-main/icons/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/Savage-Broker-main/icons/icon-192x192.png">
-    <link rel="manifest" href="/Savage-Broker-main/manifest.json">
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
     
-    <link rel="stylesheet" href="/Savage-Broker-main/src/css/ui-kit.css">
-    <link rel="stylesheet" href="/Savage-Broker-main/src/css/pages.css">
-    <link rel="stylesheet" href="/Savage-Broker-main/src/css/backoffice.css">
+    <link rel="stylesheet" href="/src/css/ui-kit.css">
+    <link rel="stylesheet" href="/src/css/pages.css">
+    <link rel="stylesheet" href="/src/css/backoffice.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -249,13 +249,13 @@
     </div>
 
     <!-- Scripts -->
-    <script src="/Savage-Broker-main/env.js"></script>
-    <script type="module" src="/Savage-Broker-main/src/js/supabaseClient.js"></script>
-    <script type="module" src="/Savage-Broker-main/src/js/auth.js"></script>
-    <script type="module" src="/Savage-Broker-main/src/js/ui/notify.js"></script>
-    <script type="module" src="/Savage-Broker-main/src/js/ui/components.js"></script>
-    
+    <script src="/env.js"></script>
     <script type="module">
+        // Wait for auth service to be available
+        let authCheckInterval = null;
+        let maxRetries = 10;
+        let retryCount = 0;
+        
         // Login controller for backoffice
         class BackOfficeLogin {
             constructor() {
@@ -270,6 +270,12 @@
             }
             
             init() {
+                // Clear any existing auth check interval
+                if (authCheckInterval) {
+                    clearInterval(authCheckInterval);
+                    authCheckInterval = null;
+                }
+                
                 this.form.addEventListener('submit', (e) => this.handleLogin(e));
                 
                 // Check if user is already logged in
@@ -277,6 +283,9 @@
             }
             
             async checkExistingAuth() {
+                // Wait for auth service to be available
+                await this.waitForAuthService();
+                
                 try {
                     const isAuthenticated = await window.authService.isAuthenticated();
                     if (isAuthenticated) {
@@ -288,6 +297,30 @@
                 } catch (error) {
                     console.log('No existing session found');
                 }
+            }
+            
+            async waitForAuthService() {
+                return new Promise((resolve) => {
+                    const checkAuth = () => {
+                        if (window.authService) {
+                            clearInterval(authCheckInterval);
+                            authCheckInterval = null;
+                            resolve();
+                            return;
+                        }
+                        
+                        retryCount++;
+                        if (retryCount > maxRetries) {
+                            console.error('Auth service not available after maximum retries');
+                            clearInterval(authCheckInterval);
+                            authCheckInterval = null;
+                            resolve();
+                            return;
+                        }
+                    };
+                    
+                    authCheckInterval = setInterval(checkAuth, 500);
+                });
             }
             
             isAdmin(role) {
@@ -309,6 +342,9 @@
                 this.hideAlert();
                 
                 try {
+                    // Ensure auth service is available
+                    await this.waitForAuthService();
+                    
                     const result = await window.authService.loginWithEmailPassword(email, password);
                     
                     if (result.success) {

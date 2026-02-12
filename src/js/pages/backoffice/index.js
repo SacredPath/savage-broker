@@ -23,14 +23,15 @@ class BackOfficeDashboard {
 
   async setupPage() {
     try {
-      // Check backoffice authentication first
-      const hasAccess = await window.BackOfficeAuth.protectRoute();
-      if (!hasAccess) {
-        return;
-      }
+      // Check RBAC permissions first
+      await this.checkRBAC();
       
-      // Load user data and update display
-      await window.BackOfficeAuth.updateUserDisplay();
+      // Load user data
+      await this.loadUserData();
+      
+      // Setup UI
+      this.renderUserInfo();
+      this.setupNavigation();
       
       // Load dashboard data
       await this.loadDashboardData();
@@ -42,7 +43,9 @@ class BackOfficeDashboard {
       console.log('Back Office dashboard setup complete');
     } catch (error) {
       console.error('Error setting up Back Office dashboard:', error);
-      if (window.Notify) {
+      if (error.message === 'Access denied') {
+        this.redirectToLogin();
+      } else if (window.Notify) {
         window.Notify.error('Failed to load dashboard');
       }
     }
@@ -131,41 +134,40 @@ class BackOfficeDashboard {
 
   async loadDashboardData() {
     try {
-      // For now, use mock data until API is ready
-      this.dashboardData = {
-        totalUsers: 0,
-        usersChange: 0,
-        totalDeposits: 0,
-        depositsChange: 0,
-        totalWithdrawals: 0,
-        withdrawalsChange: 0,
-        activePositions: 0,
-        positionsChange: 0,
-        pendingDeposits: 0,
-        pendingWithdrawals: 0,
-        pendingKYC: 0
-      };
-      
-      this.renderStats();
-      this.updateBadges();
+      const { data, error } = await window.API.fetchEdge('dashboard_stats', {
+        method: 'GET'
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      this.dashboardData = data.dashboard || {};
+      this.renderDashboard();
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
-      this.dashboardData = {
-        totalUsers: 0,
-        usersChange: 0,
-        totalDeposits: 0,
-        depositsChange: 0,
-        totalWithdrawals: 0,
-        withdrawalsChange: 0,
-        activePositions: 0,
-        positionsChange: 0,
-        pendingDeposits: 0,
-        pendingWithdrawals: 0,
-        pendingKYC: 0
-      };
-      this.renderStats();
-      this.updateBadges();
+      this.dashboardData = {};
+      this.renderDashboard();
+      this.showDashboardError();
     }
+    this.updateBadges();
+  }
+
+  renderDashboard() {
+    // TO DO: implement rendering of dashboard data
+    return {
+      totalUsers: 0,
+      usersChange: 0,
+      totalDeposits: 0,
+      depositsChange: 0,
+      totalWithdrawals: 0,
+      withdrawalsChange: 0,
+      activePositions: 0,
+      positionsChange: 0,
+      pendingDeposits: 0,
+      pendingWithdrawals: 0,
+      pendingKYC: 0
+    };
   }
 
   renderStats() {
@@ -244,14 +246,42 @@ class BackOfficeDashboard {
     if (kycBadge) {
       kycBadge.textContent = this.dashboardData.pendingKYC;
       kycBadge.style.display = this.dashboardData.pendingKYC > 0 ? 'block' : 'none';
+    }
+  }
+
   async loadRecentActivity() {
     try {
-      // For now, use mock data until API is ready
-      const activities = [];
+      const { data, error } = await window.API.fetchEdge('recent_activity', {
+        method: 'GET'
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const activities = data.activities || [];
       this.renderActivity(activities);
     } catch (error) {
       console.error('Failed to load recent activity:', error);
       this.renderActivity([]);
+    }
+    }
+  }
+
+  showDashboardError() {
+    const statsContainer = document.querySelector('.stats-grid');
+    if (statsContainer) {
+      statsContainer.innerHTML = `
+        <div class="error-state" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--backoffice-text-muted);">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 16px;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          <h3>Dashboard unavailable</h3>
+          <p>Unable to load dashboard statistics</p>
+        </div>
+      `;
     }
   }
 
@@ -267,7 +297,7 @@ class BackOfficeDashboard {
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
           <h3>No recent activity</h3>
-          <p>Activity will appear here as users interact with platform</p>
+          <p>Activity will appear here as users interact with the platform</p>
         </div>
       `;
       return;
@@ -349,14 +379,10 @@ class BackOfficeDashboard {
 
     try {
       await this.loadRecentActivity();
-      if (window.Notify) {
-        window.Notify.success('Activity refreshed successfully!');
-      }
+      window.Notify.success('Activity refreshed successfully!');
     } catch (error) {
       console.error('Failed to refresh activity:', error);
-      if (window.Notify) {
-        window.Notify.error('Failed to refresh activity');
-      }
+      window.Notify.error('Failed to refresh activity');
     } finally {
       if (refreshBtn) {
         refreshBtn.disabled = false;
@@ -366,6 +392,15 @@ class BackOfficeDashboard {
   }
 
   startRealTimeUpdates() {
+    // Update stats every 30 seconds
+    setInterval(async () => {
+      try {
+        await this.loadDashboardData();
+      } catch (error) {
+        console.error('Failed to update dashboard stats:', error);
+      }
+    }, 30000);
+
     // Update activity every 60 seconds
     setInterval(async () => {
       try {
@@ -375,10 +410,31 @@ class BackOfficeDashboard {
       }
     }, 60000);
   }
+
+  async logout() {
+    try {
+      await window.AuthService.logout();
+      window.location.href = '/login.html';
+    } catch (error) {
+      console.error('Logout failed:', error);
+      window.Notify.error('Failed to logout');
+    }
+  }
+
+  redirectToLogin() {
+    window.location.href = '/login.html';
+  }
+
+  // Cleanup method
+  destroy() {
+    console.log('Back Office dashboard cleanup');
+  }
 }
 
 // Initialize page controller
 window.backofficePage = new BackOfficeDashboard();
+
+// Export for potential testing
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = BackOfficeDashboard;
 }
