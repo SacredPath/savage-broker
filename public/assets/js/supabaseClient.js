@@ -190,7 +190,7 @@ class SupabaseClient {
         
         // Redirect to appropriate page based on current role
         if (userRole === 'user') {
-          window.location.href = '/src/pages/dashboard.html';
+          window.location.href = '/app/home.html';
         } else {
           window.location.href = redirectTo;
         }
