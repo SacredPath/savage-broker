@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Broker Trading Platform</title>
-    <meta name="description" content="Your trading dashboard and portfolio overview">
+    <title>OptionShares - Premium Trading Platform</title>
+    <meta name="description" content="Professional trading platform for options and shares with advanced features">
     <meta name="theme-color" content="#00D4AA">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Broker">
+    <meta name="apple-mobile-web-app-title" content="OptionShares">
     
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
@@ -17,512 +17,286 @@
     <link rel="shortcut icon" href="/icons/icon.svg" type="image/svg+xml">
     <link rel="manifest" href="/manifest.json">
     
-    <link rel="stylesheet" href="/css/ui-kit.css">
-    <link rel="stylesheet" href="/css/pages.css">
-    <link rel="stylesheet" href="/css/app-shell.css">
-    <link rel="stylesheet" href="/assets/css/ui.css">
-    <link rel="stylesheet" href="/assets/css/notifications.css">
-    <link rel="stylesheet" href="/css/pwa.css">
+    <link rel="stylesheet" href="/assets/css/ui-kit.css">
+    <link rel="stylesheet" href="/assets/css/pwa.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .landing-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+        }
+        
+        .hero-section {
+            padding: 80px 20px;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .hero-logo {
+            font-size: 48px;
+            font-weight: 800;
+            color: #00D4AA;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+        
+        .hero-tagline {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 48px;
+            font-weight: 400;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00D4AA 0%, #10B981 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .features-section {
+            padding: 80px 20px;
+            background: rgba(30, 41, 59, 0.5);
+        }
+        
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .features-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+            color: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+        
+        .feature-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 212, 170, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 212, 170, 0.1);
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #00D4AA 0%, #10B981 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 28px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: white;
+        }
+        
+        .feature-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-logo {
+                font-size: 36px;
+            }
+            
+            .hero-tagline {
+                font-size: 18px;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- App Shell Components -->
-    <div id="app-shell-container">
-        <!-- Top Navigation Bar -->
-        <header id="app-topbar" class="app-topbar">
-            <div class="container">
-                <div class="topbar-content">
-                    <div class="topbar-left">
-                        <button class="mobile-menu-toggle" data-action="sidebar-toggle">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="3" y1="12" x2="21" y2="12"></line>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <line x1="3" y1="18" x2="21" y2="18"></line>
-                            </svg>
-                        </button>
-                        <div class="app-logo">
-                            <h1>OPTIONSHARES</h1>
-                        </div>
-                        <nav class="desktop-nav">
-                            <a href="/app/home.html" class="nav-link active" data-page="home">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                                </svg>
-                                Home
-                            </a>
-                            <a href="/app/tiers.html" class="nav-link" data-page="tiers">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-                                </svg>
-                                Tiers
-                            </a>
-                            <a href="/app/deposits.html" class="nav-link" data-page="deposits">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Deposits
-                            </a>
-                            <a href="/app/withdraw.html" class="nav-link" data-page="withdrawals">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    <polyline points="12 19 19 12 12 5"></polyline>
-                                </svg>
-                                Withdrawals
-                            </a>
-                            <a href="/app/convert.html" class="nav-link" data-page="convert">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="23 4 23 10 17 10"></polyline>
-                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                </svg>
-                                Convert
-                            </a>
-                            <a href="/app/signals.html" class="nav-link" data-page="signals">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                </svg>
-                                Signals
-                            </a>
-                            <a href="/app/portfolio.html" class="nav-link" data-page="portfolio">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                </svg>
-                                Portfolio
-                            </a>
-                            <a href="/app/history.html" class="nav-link" data-page="history">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
-                                </svg>
-                                History
-                            </a>
-                            <a href="/app/settings.html" class="nav-link" data-page="settings">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                    <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 9.54l4.24 4.24M20.46 14.46l-4.24 4.24M7.76 7.76L3.52 3.52"></path>
-                                </svg>
-                                Settings
-                            </a>
-                            <a href="/app/support.html" class="nav-link" data-page="support">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                Support
-                            </a>
-                        </nav>
-                    </div>
-                    
-                    <div class="topbar-right">
-                        <button id="notification-bell" class="notification-bell" data-action="notifications">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                            </svg>
-                            <span class="notification-badge" id="notification-count" style="display: none;">0</span>
-                        </button>
-                        
-                        <button id="theme-toggle" class="theme-toggle-btn" data-action="theme-toggle">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="5"></circle>
-                                <line x1="12" y1="1" x2="12" y2="3"></line>
-                                <line x1="12" y1="21" x2="12" y2="23"></line>
-                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                                <line x1="1" y1="12" x2="3" y2="12"></line>
-                                <line x1="21" y1="12" x2="23" y2="12"></line>
-                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                            </svg>
-                        </button>
-                        
-                        <div class="user-menu">
-                            <button id="user-menu-btn" class="user-menu-btn" data-menu-trigger>
-                                <div class="user-avatar" id="user-avatar">U</div>
-                                <span id="user-name">User</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </button>
-                            
-                            <div class="user-dropdown" id="user-dropdown" data-menu>
-                                <div class="dropdown-header">
-                                    <div class="dropdown-user-info">
-                                        <div class="dropdown-avatar" id="dropdown-avatar">U</div>
-                                        <div>
-                                            <div class="dropdown-name" id="dropdown-name">User</div>
-                                            <div class="dropdown-email" id="dropdown-email">user@example.com</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a href="/app/settings.html" class="dropdown-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                        <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 9.54l4.24 4.24M20.46 14.46l-4.24 4.24M7.76 7.76L3.52 3.52"></path>
-                                    </svg>
-                                    Settings
-                                </a>
-                                <a href="/app/support.html" class="dropdown-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-8h-6v2h6V7zm0 4h-6v2h6v-2zm0 4h-6v2h6v-2z"></path>
-                                    </svg>
-                                    Support
-                                </a>
-                                <button class="dropdown-item" data-action="theme-toggle">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="5"></circle>
-                                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                                    </svg>
-                                    <span>Light mode</span>
-                                </button>
-                                <div class="dropdown-divider"></div>
-                                <button id="logout-btn" class="dropdown-item logout-btn" data-action="logout">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                        <polyline points="16 17 21 12 16 7"></polyline>
-                                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                                    </svg>
-                                    Sign Out
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
+    <div class="landing-container">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="theme-toggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+        </button>
 
-        <!-- Mobile Bottom Navigation -->
-        <nav id="mobile-nav" class="mobile-nav">
-            <a href="/app/home.html" class="mobile-nav-link active" data-page="home">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-            </a>
-            <a href="/app/tiers.html" class="mobile-nav-link" data-page="tiers">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-                </svg>
-                <span>Tiers</span>
-            </a>
-            <a href="/app/deposits.html" class="mobile-nav-link" data-page="deposits">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                <span>Deposit</span>
-            </a>
-            <a href="/app/portfolio.html" class="mobile-nav-link" data-page="portfolio">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <span>Portfolio</span>
-            </a>
-            <a href="/app/more.html" class="mobile-nav-link" data-page="more">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="1"></circle>
-                    <circle cx="19" cy="12" r="1"></circle>
-                    <circle cx="5" cy="12" r="1"></circle>
-                </svg>
-                <span>More</span>
-            </a>
-        </nav>
-
-        <!-- Side Navigation -->
-        <aside id="side-nav" class="side-nav" data-role="sidebar">
-            <div class="side-nav-header">
-                <div class="side-nav-logo">
-                    <h2>OPTIONSHARES</h2>
-                </div>
-            </div>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-logo">OptionShares</div>
+            <div class="hero-tagline">Premium Trading Platform for Modern Investors</div>
             
-            <nav class="side-nav-menu">
-                <div class="nav-section">
-                    <h3 class="nav-section-title">Main</h3>
-                    <a href="/app/home.html" class="side-nav-link active" data-page="home">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        Home
-                    </a>
-                    <a href="/app/tiers.html" class="side-nav-link" data-page="tiers">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-                        </svg>
-                        Tiers
-                    </a>
-                    <a href="/app/deposits.html" class="side-nav-link" data-page="deposits">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Deposits
-                    </a>
-                    <a href="/app/withdraw.html" class="side-nav-link" data-page="withdrawals">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 19 19 12 12 5"></polyline>
-                        </svg>
-                        Withdrawals
-                    </a>
-                    <a href="/app/convert.html" class="side-nav-link" data-page="convert">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                        </svg>
-                        Convert
-                    </a>
-                    <a href="/app/signals.html" class="side-nav-link" data-page="signals">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
-                        Signals
-                    </a>
-                    <a href="/app/portfolio.html" class="side-nav-link" data-page="portfolio">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                        Portfolio
-                    </a>
-                    <a href="/app/history.html" class="side-nav-link" data-page="history">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
-                        </svg>
-                        History
-                    </a>
-                </div>
-                
-                <div class="nav-section">
-                    <h3 class="nav-section-title">Account</h3>
-                    <a href="/app/settings.html" class="side-nav-link" data-page="settings">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 9.54l4.24 4.24M20.46 14.46l-4.24 4.24M7.76 7.76L3.52 3.52"></path>
-                        </svg>
-                        Settings
-                    </a>
-                    <a href="/app/support.html" class="side-nav-link" data-page="support">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        Support
-                    </a>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- Mobile Menu Overlay -->
-        <div id="mobile-menu-overlay" class="mobile-menu-overlay" data-role="sidebar-overlay"></div>
-
-        <!-- Notification Panel -->
-        <div id="notification-panel" class="notification-panel">
-            <div class="notification-header">
-                <h3>Notifications</h3>
-                <button id="close-notifications" class="close-btn">
+            <div class="hero-buttons">
+                <a href="/login.html" class="btn-primary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
                     </svg>
-                </button>
+                    Sign In
+                </a>
+                <a href="/register.html" class="btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    Create Account
+                </a>
             </div>
-            <div class="notification-list" id="notification-list">
-                <!-- Notifications will be populated here -->
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Main Content -->
-    <main class="app-main with-mobile-nav">
-            <!-- Welcome Section -->
-            <section class="welcome-section">
-                <div class="welcome-content">
-                    <h1>Welcome back, <span id="user-display-name">User</span>!</h1>
-                    <p class="welcome-subtitle">Here's your trading overview</p>
-                </div>
-                <div class="welcome-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='/app/deposits.html'">
-                        Deposit Funds
-                    </button>
-                    <button class="btn btn-secondary" onclick="window.location.href='/app/portfolio.html'">
-                        Start Trading
-                    </button>
-                </div>
-            </section>
-
-            <!-- Quick Stats -->
-            <section class="quick-stats">
-                <h2 class="section-title">Portfolio Overview</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="total-balance">$0.00</div>
-                            <div class="stat-label">Total Balance</div>
-                            <div class="stat-change positive">+2.5%</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="invested-amount">$0.00</div>
-                            <div class="stat-label">Invested Amount</div>
-                            <div class="stat-change positive">+5.2%</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="total-profit">$0.00</div>
-                            <div class="stat-label">Total Profit</div>
-                            <div class="stat-change positive">+12.8%</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="active-signals">0</div>
-                            <div class="stat-label">Active Signals</div>
-                            <div class="stat-change">New</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Quick Actions -->
-            <section class="quick-actions">
-                <h2 class="section-title">Quick Actions</h2>
-                <div class="actions-grid">
-                    <button class="action-card" onclick="window.location.href='/app/deposits.html'">
-                        <div class="action-icon deposit">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                        </div>
-                        <div class="action-title">Deposit</div>
-                        <div class="action-description">Add funds to your account</div>
-                    </button>
-                    
-                    <button class="action-card" onclick="window.location.href='/app/withdraw.html'">
-                        <div class="action-icon withdraw">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 19 19 12 12 5"></polyline>
-                            </svg>
-                        </div>
-                        <div class="action-title">Withdraw</div>
-                        <div class="action-description">Transfer funds to your bank</div>
-                    </button>
-                    
-                    <button class="action-card" onclick="window.location.href='/app/convert.html'">
-                        <div class="action-icon convert">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="23 4 23 10 17 10"></polyline>
-                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                            </svg>
-                        </div>
-                        <div class="action-title">Convert</div>
-                        <div class="action-description">Exchange currencies</div>
-                    </button>
-                    
-                    <button class="action-card" onclick="window.location.href='/app/signals.html'">
-                        <div class="action-icon signals">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                            </svg>
-                        </div>
-                        <div class="action-title">Signals</div>
-                        <div class="action-description">View trading signals</div>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Recent Activity -->
-            <section class="recent-activity">
-                <div class="section-header">
-                    <h2 class="section-title">Recent Activity</h2>
-                    <button class="btn btn-ghost btn-sm" onclick="window.location.href='/app/history.html'">
-                        View All
-                    </button>
-                </div>
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="features-container">
+                <h2 class="features-title">Why Choose OptionShares?</h2>
                 
-                <div class="activity-list" id="recent-activity-list">
-                    <!-- Activity items will be populated here -->
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3 class="feature-title">Advanced Trading</h3>
+                        <p class="feature-description">Professional tools for options and shares trading with real-time data and advanced charting.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3 class="feature-title">Secure Platform</h3>
+                        <p class="feature-description">Bank-level security with two-factor authentication and encrypted transactions.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Lightning Fast</h3>
+                        <p class="feature-description">Execute trades in milliseconds with our optimized trading infrastructure.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3 class="feature-title">Portfolio Analytics</h3>
+                        <p class="feature-description">Comprehensive analytics and insights to optimize your investment strategy.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🌍</div>
+                        <h3 class="feature-title">Global Markets</h3>
+                        <p class="feature-description">Access to international markets and diverse investment opportunities.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">Mobile Ready</h3>
+                        <p class="feature-description">Trade on the go with our responsive mobile-optimized platform.</p>
+                    </div>
                 </div>
-            </section>
-            </main>
+            </div>
+        </section>
+    </div>
 
     <!-- Scripts -->
     <script src="/assets/js/env.js"></script>
-    <script type="module" src="/assets/js/supabaseClient.js"></script>
-    <script type="module" src="/assets/js/auth.js"></script>
-    <script type="module" src="/assets/js/authGuard.js"></script>
-    <script type="module" src="/assets/js/notify.js"></script>
-    <script type="module" src="/assets/js/components.js"></script>
-    <script type="module" src="/assets/js/money.js"></script>
-    <script type="module" src="/assets/js/api.js"></script>
-    <script type="module" src="/assets/js/balance-service.js"></script>
-    <script type="module" src="/assets/js/app-shell.js"></script>
-    <script type="module" src="/assets/js/pages/app/home-new.js"></script>
-    <script>
-        // Debug script to check sidebar functionality
-        setTimeout(() => {
-            console.log('=== HOME SIDEBAR DEBUG ===');
-            const sidebarToggle = document.querySelector('[data-action="sidebar-toggle"]');
-            const sidebar = document.querySelector('[data-role="sidebar"]');
-            const overlay = document.querySelector('[data-role="sidebar-overlay"]');
-            
-            console.log('Sidebar toggle found:', !!sidebarToggle);
-            console.log('Sidebar found:', !!sidebar);
-            console.log('Overlay found:', !!overlay);
-            console.log('AppShell initialized:', !!window.AppShell);
-            console.log('API client available:', !!window.API);
-            
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', () => {
-                    console.log('Manual toggle clicked');
-                    document.documentElement.classList.toggle('sidebar-open');
-                });
-            }
-        }, 1000);
-    </script>
+    <script src="/assets/js/_shared/theme.js"></script>
 </body>
 </html>
+                                                                
