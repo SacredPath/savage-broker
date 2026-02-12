@@ -48,8 +48,8 @@ FROM backoffice_roles;
 SELECT 
     'profiles_admin_data' as check_type,
     COUNT(*) as total_profiles,
-    COUNT(CASE WHEN email IS NOT NULL THEN 1 END) as with_email
-    COUNT(CASE WHEN created_at IS NOT NULL THEN 1 END) as with_created_at
+    COUNT(*) FILTER (WHERE email IS NOT NULL) as with_email,
+    COUNT(*) FILTER (WHERE created_at IS NOT NULL) as with_created_at,
     MIN(created_at) as earliest_created,
     MAX(created_at) as latest_created
 FROM profiles;
