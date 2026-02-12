@@ -492,7 +492,7 @@ class AuthService {
       const { data, error } = await client.auth.resetPasswordForEmail(
         email.toLowerCase().trim(),
         {
-          redirectTo: `${window.location.origin}/login.html`
+          redirectTo: `${window.location.origin}/reset-password.html`
         }
       );
 
