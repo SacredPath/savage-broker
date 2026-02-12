@@ -459,7 +459,7 @@ class APIClient {
       }
 
       const { data: kycData, error } = await this.serviceClient
-        .from('kyc_status')
+        .from('kyc_applications')
         .select('*')
         .eq('user_id', userId)
         .single();
