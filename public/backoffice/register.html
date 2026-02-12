@@ -382,12 +382,20 @@
 
     <!-- Scripts -->
     <script src="/env.js"></script>
-    <script type="module" src="/src/js/supabaseClient.js"></script>
-    <script type="module" src="/src/js/auth.js"></script>
-    <script type="module" src="/src/js/ui/notify.js"></script>
-    <script type="module" src="/src/js/ui/components.js"></script>
-    <script type="module" src="/src/js/money/money.js"></script>
-    <script type="module" src="/assets/js/api.js"></script>
+    <script type="module">
+        // Wait for auth service to be available
+        let authCheckInterval = null;
+        let maxRetries = 10;
+        let retryCount = 0;
+        
+        // Registration controller for backoffice
+        class BackOfficeRegister {
+            constructor() {
+                this.form = document.getElementById('register-form');
+                this.firstNameInput = document.getElementById('firstName');
+                this.lastNameInput = document.getElementById('lastName');
+                this.emailInput = document.getElementById('email');
+                this.phoneInput = document.getElementById('phone');
                 this.positionInput = document.getElementById('position');
                 this.passwordInput = document.getElementById('password');
                 this.confirmPasswordInput = document.getElementById('confirmPassword');
@@ -399,6 +407,12 @@
             }
             
             init() {
+                // Clear any existing auth check interval
+                if (authCheckInterval) {
+                    clearInterval(authCheckInterval);
+                    authCheckInterval = null;
+                }
+                
                 this.form.addEventListener('submit', (e) => this.handleRegister(e));
                 
                 // Password confirmation validation
@@ -411,6 +425,9 @@
             }
             
             async checkExistingAuth() {
+                // Wait for auth service to be available
+                await this.waitForAuthService();
+                
                 try {
                     const isAuthenticated = await window.authService.isAuthenticated();
                     if (isAuthenticated) {
@@ -422,6 +439,30 @@
                 } catch (error) {
                     console.log('No existing session found');
                 }
+            }
+            
+            async waitForAuthService() {
+                return new Promise((resolve) => {
+                    const checkAuth = () => {
+                        if (window.authService) {
+                            clearInterval(authCheckInterval);
+                            authCheckInterval = null;
+                            resolve();
+                            return;
+                        }
+                        
+                        retryCount++;
+                        if (retryCount > maxRetries) {
+                            console.error('Auth service not available after maximum retries');
+                            clearInterval(authCheckInterval);
+                            authCheckInterval = null;
+                            resolve();
+                            return;
+                        }
+                    };
+                    
+                    authCheckInterval = setInterval(checkAuth, 500);
+                });
             }
             
             isAdmin(role) {
@@ -452,6 +493,9 @@
                 this.hideAlert();
                 
                 try {
+                    // Ensure auth service is available
+                    await this.waitForAuthService();
+                    
                     const registrationData = {
                         displayName: `${formData.firstName} ${formData.lastName}`,
                         firstName: formData.firstName,

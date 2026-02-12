@@ -250,18 +250,32 @@
 
     <!-- Scripts -->
     <script src="/env.js"></script>
-    <script type="module" src="/src/js/supabaseClient.js"></script>
-    <script type="module" src="/src/js/auth.js"></script>
-    <script type="module" src="/src/js/ui/notify.js"></script>
-    <script type="module" src="/src/js/ui/components.js"></script>
-    <script type="module" src="/src/js/money/money.js"></script>
-    <script type="module" src="/assets/js/api.js"></script>
+    <script type="module">
+        // Wait for auth service to be available
+        let authCheckInterval = null;
+        let maxRetries = 10;
+        let retryCount = 0;
+        
+        // Login controller for backoffice
+        class BackOfficeLogin {
+            constructor() {
+                this.form = document.getElementById('login-form');
+                this.emailInput = document.getElementById('email');
+                this.passwordInput = document.getElementById('password');
+                this.loginBtn = document.getElementById('login-btn');
+                this.btnText = document.getElementById('btn-text');
                 this.alert = document.getElementById('alert');
                 
                 this.init();
             }
             
             init() {
+                // Clear any existing auth check interval
+                if (authCheckInterval) {
+                    clearInterval(authCheckInterval);
+                    authCheckInterval = null;
+                }
+                
                 this.form.addEventListener('submit', (e) => this.handleLogin(e));
                 
                 // Check if user is already logged in
@@ -269,6 +283,9 @@
             }
             
             async checkExistingAuth() {
+                // Wait for auth service to be available
+                await this.waitForAuthService();
+                
                 try {
                     const isAuthenticated = await window.authService.isAuthenticated();
                     if (isAuthenticated) {
@@ -280,6 +297,30 @@
                 } catch (error) {
                     console.log('No existing session found');
                 }
+            }
+            
+            async waitForAuthService() {
+                return new Promise((resolve) => {
+                    const checkAuth = () => {
+                        if (window.authService) {
+                            clearInterval(authCheckInterval);
+                            authCheckInterval = null;
+                            resolve();
+                            return;
+                        }
+                        
+                        retryCount++;
+                        if (retryCount > maxRetries) {
+                            console.error('Auth service not available after maximum retries');
+                            clearInterval(authCheckInterval);
+                            authCheckInterval = null;
+                            resolve();
+                            return;
+                        }
+                    };
+                    
+                    authCheckInterval = setInterval(checkAuth, 500);
+                });
             }
             
             isAdmin(role) {
@@ -301,6 +342,9 @@
                 this.hideAlert();
                 
                 try {
+                    // Ensure auth service is available
+                    await this.waitForAuthService();
+                    
                     const result = await window.authService.loginWithEmailPassword(email, password);
                     
                     if (result.success) {
