@@ -568,6 +568,22 @@ class AuthService {
 
       const profileResult = await this.getUserProfile(user.id);
       
+      // If profile not found, create one automatically
+      if (!profileResult.success && profileResult.error?.code === 'PGRST116') {
+        console.log('Profile not found, creating automatically for user:', user.id);
+        const createResult = await this.createUserProfile(user.id, {
+          email: user.email,
+          display_name: user.email?.split('@')[0] || user.user_metadata?.display_name || 'User'
+        });
+        
+        if (createResult.success) {
+          return {
+            ...user,
+            profile: createResult.data
+          };
+        }
+      }
+      
       return {
         ...user,
         profile: profileResult.success ? profileResult.data : null
