@@ -134,6 +134,11 @@ class SupabaseClient {
       const { data: { user }, error } = await client.auth.getUser();
       
       if (error) {
+        // Check if this is just "no user" error, not a real error
+        if (error.message?.includes('Invalid') || error.message?.includes('not found') || error.message?.includes('missing')) {
+          console.log('No authenticated user found - this is expected for public routes');
+          return null; // Don't throw error for missing user
+        }
         throw error;
       }
       
