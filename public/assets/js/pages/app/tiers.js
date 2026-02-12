@@ -180,14 +180,11 @@ class TiersPage {
 
   async getUserPositions() {
     try {
-      // Load user positions from database with tier information
+      // Load user positions from database (simplified without join)
       const userId = await window.API.getCurrentUserId();
       const { data, error } = await window.API.serviceClient
         .from('positions')
-        .select(`
-          *,
-          investment_tiers(name, daily_roi, investment_period_days, min_amount, max_amount)
-        `)
+        .select('*')
         .eq('user_id', userId)
         .eq('status', 'active')
         .order('opened_at', { ascending: false });
