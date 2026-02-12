@@ -406,15 +406,15 @@ class TiersPage {
     if (isCurrentTier) {
       // View Details - show current tier details
       console.log('Navigating to tier details for current tier:', tier.name);
-      window.location.href = `/app/tier_details.html?id=${tierId}`;
+      window.location.href = `/app/tier-details.html?id=${tierId}`;
     } else if (userTotalEquity >= tier.min_amount) {
       // Invest Now - user qualifies for this tier
       console.log('Navigating to tier details for investment:', tier.name);
-      window.location.href = `/app/tier_details.html?id=${tierId}`;
+      window.location.href = `/app/tier-details.html?id=${tierId}`;
     } else {
       // Upgrade - user needs to deposit more
       console.log('Navigating to tier details for upgrade:', tier.name);
-      window.location.href = `/app/tier_details.html?id=${tierId}`;
+      window.location.href = `/app/tier-details.html?id=${tierId}`;
     }
   }
 
