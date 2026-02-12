@@ -183,7 +183,7 @@ class TiersPage {
       // Load user positions from database with tier information
       const userId = await window.API.getCurrentUserId();
       const { data, error } = await window.API.serviceClient
-        .from('user_positions')
+        .from('positions')
         .select(`
           *,
           investment_tiers(name, daily_roi, investment_period_days, min_amount, max_amount)
@@ -383,9 +383,12 @@ class TiersPage {
   handleTierAction(tierId) {
     console.log('handleTierAction called with tierId:', tierId);
     
-    const tier = this.tiers.find(t => t.id === tierId);
+    // Convert tierId to number for proper comparison
+    const numericTierId = parseInt(tierId);
+    const tier = this.tiers.find(t => t.id === numericTierId);
     if (!tier) {
-      console.error('Tier not found for ID:', tierId);
+      console.error('Tier not found for ID:', tierId, 'numeric:', numericTierId);
+      console.log('Available tiers:', this.tiers.map(t => ({ id: t.id, name: t.name })));
       return;
     }
 
