@@ -28,8 +28,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
     'Entry-level investment tier with competitive returns.',
     150.00,
     1000.00,
-    30,
-    0.005, -- 0.5% daily
+    3,
+    0.1, -- 10% daily (30% total over 3 days)
     1,
     '["Basic trading signals", "Email support", "Daily ROI payouts"]',
     '{"BTC": 40, "ETH": 30, "USDT": 30}'
@@ -39,8 +39,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
     'Intermediate tier with enhanced returns and features.',
     1000.01,
     10000.00,
-    60,
-    0.008, -- 0.8% daily
+    7,
+    0.0643, -- 6.43% daily (45% total over 7 days)
     2,
     '["Advanced trading signals", "Priority support", "Daily ROI payouts", "Portfolio analytics"]',
     '{"BTC": 35, "ETH": 35, "USDT": 30}'
@@ -50,8 +50,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
     'Advanced tier for serious investors.',
     10000.01,
     20000.00,
-    90,
-    0.012, -- 1.2% daily
+    14,
+    0.0357, -- 3.57% daily (50% total over 14 days)
     3,
     '["Premium trading signals", "24/7 support", "Daily ROI payouts", "Advanced analytics", "Risk management tools"]',
     '{"BTC": 30, "ETH": 40, "USDT": 30}'
@@ -61,8 +61,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
     'Professional tier with high returns.',
     20000.01,
     50000.00,
-    120,
-    0.015, -- 1.5% daily
+    30,
+    0.0333, -- 3.33% daily (100% total over 30 days)
     4,
     '["VIP trading signals", "Dedicated account manager", "Daily ROI payouts", "Custom analytics", "API access", "Lower fees"]',
     '{"BTC": 25, "ETH": 45, "USDT": 30}'
@@ -72,8 +72,8 @@ INSERT INTO public.investment_tiers (name, description, min_amount, max_amount, 
     'Elite tier for maximum returns and exclusive benefits.',
     50000.01,
     10000000.00,
-    180,
-    0.02, -- 2.0% daily
+    60,
+    0.0333, -- 3.33% daily (200% total over 60 days)
     5,
     '["Exclusive signals", "Personal advisor", "Daily ROI payouts", "Custom strategies", "Priority API", "Zero fees", "Exclusive events"]',
     '{"BTC": 20, "ETH": 50, "USDT": 30}'

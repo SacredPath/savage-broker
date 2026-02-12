@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Back Office Login - Broker</title>
+    
+    <!-- Icons -->
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <link rel="stylesheet" href="/src/css/ui-kit.css">
+    <link rel="stylesheet" href="/src/css/pages.css">
+    <link rel="stylesheet" href="/src/css/backoffice.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        .backoffice-login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .login-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00D4AA 0%, #10B981 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #00D4AA;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00D4AA 0%, #10B981 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0, 212, 170, 0.3);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .forgot-password {
+            text-align: center;
+        }
+        
+        .forgot-password a {
+            color: #00D4AA;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-password a:hover {
+            color: #10B981;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+        
+        .register-link a {
+            color: #00D4AA;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .register-link a:hover {
+            color: #10B981;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="backoffice-login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">B</div>
+                <h1 class="login-title">Back Office Login</h1>
+                <p class="login-subtitle">Enter your credentials to access the admin panel</p>
+            </div>
+            
+            <div id="alert" class="alert"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="admin@broker.com"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" id="login-btn" class="login-btn">
+                    <span id="btn-text">Sign In</span>
+                </button>
+            </form>
+            
+            <div class="forgot-password">
+                <a href="#" onclick="handleForgotPassword()">Forgot your password?</a>
+            </div>
+            
+            <div class="register-link">
+                Don't have an admin account? <a href="register.html">Request Access</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/env.js"></script>
+    <script type="module" src="/src/js/supabaseClient.js"></script>
+    <script type="module" src="/src/js/auth.js"></script>
+    <script type="module" src="/src/js/ui/notify.js"></script>
+    <script type="module" src="/src/js/ui/components.js"></script>
+    <script type="module" src="/src/js/money/money.js"></script>
+    <script type="module" src="/assets/js/api.js"></script>
+                this.alert = document.getElementById('alert');
+                
+                this.init();
+            }
+            
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // Check if user is already logged in
+                this.checkExistingAuth();
+            }
+            
+            async checkExistingAuth() {
+                try {
+                    const isAuthenticated = await window.authService.isAuthenticated();
+                    if (isAuthenticated) {
+                        const userWithProfile = await window.authService.getCurrentUserWithProfile();
+                        if (userWithProfile?.profile && this.isAdmin(userWithProfile.profile.role)) {
+                            window.location.href = '/backoffice/pages/index.html';
+                        }
+                    }
+                } catch (error) {
+                    console.log('No existing session found');
+                }
+            }
+            
+            isAdmin(role) {
+                return ['superadmin', 'admin', 'support'].includes(role);
+            }
+            
+            async handleLogin(e) {
+                e.preventDefault();
+                
+                const email = this.emailInput.value.trim();
+                const password = this.passwordInput.value;
+                
+                if (!email || !password) {
+                    this.showAlert('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                this.setLoading(true);
+                this.hideAlert();
+                
+                try {
+                    const result = await window.authService.loginWithEmailPassword(email, password);
+                    
+                    if (result.success) {
+                        // Get user profile to check role
+                        const userWithProfile = await window.authService.getCurrentUserWithProfile();
+                        
+                        if (!userWithProfile?.profile) {
+                            this.showAlert('User profile not found. Please contact administrator.', 'error');
+                            await window.authService.logout();
+                            return;
+                        }
+                        
+                        const userRole = userWithProfile.profile.role;
+                        
+                        if (!this.isAdmin(userRole)) {
+                            this.showAlert('Access denied. You do not have admin privileges.', 'error');
+                            await window.authService.logout();
+                            return;
+                        }
+                        
+                        // Successful login with admin privileges
+                        this.showAlert('Login successful! Redirecting...', 'success');
+                        
+                        setTimeout(() => {
+                            window.location.href = '/backoffice/pages/index.html';
+                        }, 1000);
+                        
+                    } else {
+                        this.showAlert(result.error?.message || 'Login failed', 'error');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showAlert('An unexpected error occurred. Please try again.', 'error');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+            
+            setLoading(isLoading) {
+                this.loginBtn.disabled = isLoading;
+                if (isLoading) {
+                    this.btnText.innerHTML = '<span class="loading-spinner"></span>Signing In...';
+                } else {
+                    this.btnText.textContent = 'Sign In';
+                }
+            }
+            
+            showAlert(message, type) {
+                this.alert.textContent = message;
+                this.alert.className = `alert alert-${type}`;
+                this.alert.style.display = 'block';
+            }
+            
+            hideAlert() {
+                this.alert.style.display = 'none';
+            }
+        }
+        
+        // Forgot password handler
+        window.handleForgotPassword = async function() {
+            const email = prompt('Enter your email address for password reset:');
+            if (!email) return;
+            
+            try {
+                const result = await window.authService.resetPassword(email);
+                if (result.success) {
+                    alert('Password reset email sent! Please check your inbox.');
+                } else {
+                    alert('Failed to send password reset email. Please try again.');
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
+        };
+        
+        // Initialize login controller when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new BackOfficeLogin();
+        });
+    </script>
+</body>
+</html>

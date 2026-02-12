@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Back Office Registration - Broker</title>
+    
+    <!-- Icons -->
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <link rel="stylesheet" href="/src/css/ui-kit.css">
+    <link rel="stylesheet" href="/src/css/pages.css">
+    <link rel="stylesheet" href="/src/css/backoffice.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        .backoffice-register-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .register-card {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .register-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00D4AA 0%, #10B981 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+        
+        .register-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .register-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #00D4AA;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #00D4AA;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .form-select option {
+            background: #1e293b;
+            color: white;
+        }
+        
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00D4AA 0%, #10B981 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+        
+        .register-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0, 212, 170, 0.3);
+        }
+        
+        .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #00D4AA;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .login-link a:hover {
+            color: #10B981;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .requirements {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .requirements h4 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .requirements ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .requirements li {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+        
+        .requirements li:before {
+            content: "•";
+            color: #00D4AA;
+            position: absolute;
+            left: 0;
+        }
+        
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .register-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="backoffice-register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="register-logo">B</div>
+                <h1 class="register-title">Back Office Registration</h1>
+                <p class="register-subtitle">Request admin access to the broker platform</p>
+            </div>
+            
+            <div id="alert" class="alert"></div>
+            
+            <div class="requirements">
+                <h4>Access Requirements:</h4>
+                <ul>
+                    <li>Must be authorized by platform administration</li>
+                    <li>Valid company email address required</li>
+                    <li>Registration requires approval</li>
+                    <li>Initial role will be 'support' by default</li>
+                </ul>
+            </div>
+            
+            <form id="register-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="firstName">First Name</label>
+                        <input 
+                            type="text" 
+                            id="firstName" 
+                            class="form-input" 
+                            placeholder="John"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="lastName">Last Name</label>
+                        <input 
+                            type="text" 
+                            id="lastName" 
+                            class="form-input" 
+                            placeholder="Doe"
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="admin@company.com"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        class="form-input" 
+                        placeholder="+1 (555) 123-4567"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="position">Position/Role</label>
+                    <select id="position" class="form-select" required>
+                        <option value="">Select your position</option>
+                        <option value="support">Support Agent</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Administrator</option>
+                        <option value="developer">Developer</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Create a strong password"
+                        required
+                        minlength="6"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        class="form-input" 
+                        placeholder="Confirm your password"
+                        required
+                        minlength="6"
+                    >
+                </div>
+                
+                <button type="submit" id="register-btn" class="register-btn">
+                    <span id="btn-text">Request Access</span>
+                </button>
+            </form>
+            
+            <div class="login-link">
+                Already have an account? <a href="login.html">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/env.js"></script>
+    <script type="module" src="/src/js/supabaseClient.js"></script>
+    <script type="module" src="/src/js/auth.js"></script>
+    <script type="module" src="/src/js/ui/notify.js"></script>
+    <script type="module" src="/src/js/ui/components.js"></script>
+    <script type="module" src="/src/js/money/money.js"></script>
+    <script type="module" src="/assets/js/api.js"></script>
+                this.positionInput = document.getElementById('position');
+                this.passwordInput = document.getElementById('password');
+                this.confirmPasswordInput = document.getElementById('confirmPassword');
+                this.registerBtn = document.getElementById('register-btn');
+                this.btnText = document.getElementById('btn-text');
+                this.alert = document.getElementById('alert');
+                
+                this.init();
+            }
+            
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleRegister(e));
+                
+                // Password confirmation validation
+                this.confirmPasswordInput.addEventListener('input', () => {
+                    this.validatePasswordMatch();
+                });
+                
+                // Check if user is already logged in
+                this.checkExistingAuth();
+            }
+            
+            async checkExistingAuth() {
+                try {
+                    const isAuthenticated = await window.authService.isAuthenticated();
+                    if (isAuthenticated) {
+                        const userWithProfile = await window.authService.getCurrentUserWithProfile();
+                        if (userWithProfile?.profile && this.isAdmin(userWithProfile.profile.role)) {
+                            window.location.href = '/backoffice/pages/index.html';
+                        }
+                    }
+                } catch (error) {
+                    console.log('No existing session found');
+                }
+            }
+            
+            isAdmin(role) {
+                return ['superadmin', 'admin', 'support'].includes(role);
+            }
+            
+            validatePasswordMatch() {
+                const password = this.passwordInput.value;
+                const confirmPassword = this.confirmPasswordInput.value;
+                
+                if (confirmPassword && password !== confirmPassword) {
+                    this.confirmPasswordInput.setCustomValidity('Passwords do not match');
+                } else {
+                    this.confirmPasswordInput.setCustomValidity('');
+                }
+            }
+            
+            async handleRegister(e) {
+                e.preventDefault();
+                
+                const formData = this.getFormData();
+                
+                if (!this.validateForm(formData)) {
+                    return;
+                }
+                
+                this.setLoading(true);
+                this.hideAlert();
+                
+                try {
+                    const registrationData = {
+                        displayName: `${formData.firstName} ${formData.lastName}`,
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        phone: formData.phone,
+                        role: 'support', // Default role for new backoffice users
+                        position: formData.position,
+                        registrationType: 'backoffice'
+                    };
+                    
+                    const result = await window.authService.registerWithEmailPassword(
+                        formData.email, 
+                        formData.password, 
+                        registrationData
+                    );
+                    
+                    if (result.success) {
+                        if (result.emailConfirmationRequired) {
+                            this.showAlert(
+                                'Registration successful! Please check your email to verify your account. After verification, your request will be reviewed by administrators.', 
+                                'info'
+                            );
+                            
+                            // Redirect to login after 3 seconds
+                            setTimeout(() => {
+                                window.location.href = 'login.html';
+                            }, 5000);
+                        } else {
+                            this.showAlert(
+                                'Registration successful! Your account is pending approval. You will be notified when access is granted.', 
+                                'success'
+                            );
+                            
+                            // Redirect to login after 3 seconds
+                            setTimeout(() => {
+                                window.location.href = 'login.html';
+                            }, 3000);
+                        }
+                    } else {
+                        this.showAlert(result.error?.message || 'Registration failed', 'error');
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    this.showAlert('An unexpected error occurred. Please try again.', 'error');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+            
+            getFormData() {
+                return {
+                    firstName: this.firstNameInput.value.trim(),
+                    lastName: this.lastNameInput.value.trim(),
+                    email: this.emailInput.value.trim().toLowerCase(),
+                    phone: this.phoneInput.value.trim(),
+                    position: this.positionInput.value,
+                    password: this.passwordInput.value,
+                    confirmPassword: this.confirmPasswordInput.value
+                };
+            }
+            
+            validateForm(data) {
+                // Check required fields
+                if (!data.firstName || !data.lastName || !data.email || !data.position) {
+                    this.showAlert('Please fill in all required fields', 'error');
+                    return false;
+                }
+                
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(data.email)) {
+                    this.showAlert('Please enter a valid email address', 'error');
+                    return false;
+                }
+                
+                // Password validation
+                if (data.password.length < 6) {
+                    this.showAlert('Password must be at least 6 characters long', 'error');
+                    return false;
+                }
+                
+                if (data.password !== data.confirmPassword) {
+                    this.showAlert('Passwords do not match', 'error');
+                    return false;
+                }
+                
+                // Company email validation (basic check)
+                if (!data.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) || 
+                    data.email.includes('@gmail.com') || 
+                    data.email.includes('@yahoo.com') || 
+                    data.email.includes('@hotmail.com')) {
+                    this.showAlert('Please use a company email address for registration', 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            setLoading(isLoading) {
+                this.registerBtn.disabled = isLoading;
+                if (isLoading) {
+                    this.btnText.innerHTML = '<span class="loading-spinner"></span>Registering...';
+                } else {
+                    this.btnText.textContent = 'Request Access';
+                }
+            }
+            
+            showAlert(message, type) {
+                this.alert.textContent = message;
+                this.alert.className = `alert alert-${type}`;
+                this.alert.style.display = 'block';
+            }
+            
+            hideAlert() {
+                this.alert.style.display = 'none';
+            }
+        }
+        
+        // Initialize registration controller when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new BackOfficeRegister();
+        });
+    </script>
+</body>
+</html>
