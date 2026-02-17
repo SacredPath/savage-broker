@@ -250,6 +250,7 @@ class ConvertPage {
   }
 
   async updateQuote() {
+    console.log('=== updateQuote START ===');
     const amountInput = document.getElementById('convert-amount');
     const amount = parseFloat(amountInput?.value);
     
@@ -261,17 +262,23 @@ class ConvertPage {
       return;
     }
 
+    console.log('Amount validation passed');
+
     // Check if balances are available
     if (!this.userBalances || !this.userBalances.USDT) {
       console.log('Balances not available, proceeding with quote anyway');
       // Don't return - allow quote generation even without balance info
     } else {
+      console.log('Balances available:', this.userBalances);
       // Check if amount exceeds available balance
       if (amount > this.userBalances.USDT.available) {
+        console.log('Amount exceeds balance:', amount, '>', this.userBalances.USDT.available);
         this.showQuoteError('Insufficient USDT balance');
         return;
       }
     }
+
+    console.log('Balance check passed, calling getFXQuote');
 
     try {
       // For now, use mock data since we don't have a quote API endpoint yet
@@ -289,6 +296,8 @@ class ConvertPage {
       console.error('Failed to update quote:', error);
       this.showQuoteError('Failed to get quote');
     }
+    
+    console.log('=== updateQuote END ===');
   }
 
   
