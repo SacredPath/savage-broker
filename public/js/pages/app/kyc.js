@@ -73,11 +73,20 @@ class KYCPage {
 
   async loadUserData() {
     try {
+      console.log('KYC: Loading user data with auto-profile creation...');
       this.currentUser = await window.AuthService.getCurrentUserWithProfile();
       
       if (!this.currentUser) {
         throw new Error('User not authenticated');
       }
+      
+      console.log('KYC: User data loaded successfully:', this.currentUser);
+      console.log('KYC: Profile data:', this.currentUser.profile);
+      
+      if (!this.currentUser.profile) {
+        console.warn('KYC: Profile is null - this should not happen with auto-creation');
+      }
+      
     } catch (error) {
       console.error('Failed to load user data:', error);
       throw error;
@@ -86,17 +95,23 @@ class KYCPage {
 
   async loadKYCStatus() {
     try {
+      console.log('KYC: Loading KYC status...');
       const { data, error } = await window.API.fetchEdge('kyc_status', {
         method: 'GET'
       });
 
+      console.log('KYC: Status response:', { data, error });
+
       if (error) {
+        console.error('KYC: Status error:', error);
         throw error;
       }
 
-      this.kycStatus = data.status || { status: 'not_submitted' };
+      this.kycStatus = data;
+      console.log('KYC: Status loaded:', this.kycStatus);
     } catch (error) {
-      console.error('Failed to load KYC status:', error);
+      console.error('KYC: Failed to load KYC status:', error);
+      // Don't throw error - allow page to load even if status fails
       this.kycStatus = { status: 'not_submitted' };
     }
   }
