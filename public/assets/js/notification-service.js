@@ -47,14 +47,15 @@ class NotificationService {
     let attempts = 0;
     const maxAttempts = 100; // 10 seconds max wait
     
-    while (!window.AuthService && attempts < maxAttempts) {
+    // Wait for AuthStateManager (not AuthService)
+    while (!window.AuthStateManager && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 100));
       attempts++;
     }
 
-    if (window.AuthService) {
-      // Listen for auth state changes
-      window.AuthService.onAuthStateChanged((user) => {
+    if (window.AuthStateManager) {
+      // Listen for auth state changes using AuthStateManager
+      window.AuthStateManager.addListener((authState, user) => {
         this.handleAuthStateChange(user);
       });
     }
