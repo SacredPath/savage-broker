@@ -148,20 +148,25 @@ class PortfolioPage {
         throw new Error('User not authenticated');
       }
 
-      // Use REST API method instead of Edge Function
-      const data = await this.api.getPortfolioSnapshot(userId);
+      // Load both portfolio data AND wallet balances (like home page)
+      const [portfolioData, walletData] = await Promise.all([
+        this.api.getPortfolioSnapshot(userId),
+        this.api.getWalletBalances(userId)
+      ]);
       
-      this.portfolioData = data;
+      this.portfolioData = portfolioData;
+      this.walletData = walletData;
       
       if (!this.portfolioData || !this.portfolioData.positions) {
         this.renderEmptyState('No portfolio data available');
         return;
       }
 
-      console.log('Portfolio snapshot loaded successfully:', {
-        positions: data.positions?.length || 0,
-        balances: data.balances?.length || 0,
-        total_value: data.summary?.total_value
+      console.log('Portfolio data loaded successfully:', {
+        positions: portfolioData.positions?.length || 0,
+        balances: walletData.balances?.length || 0,
+        total_value: portfolioData.summary?.total_value,
+        wallet_total: walletData.total_usd
       });
     } catch (error) {
       console.error('Failed to load portfolio snapshot:', error);
@@ -265,6 +270,14 @@ class PortfolioPage {
     totalRoiElement.className = 'overview-value ' + (totalRoi >= 0 ? 'profit' : 'loss');
     
     document.getElementById('positions-count').textContent = this.portfolioData.positions.length;
+    
+    // Update available balance from wallet data (like home page)
+    if (this.walletData) {
+      const availableBalanceElement = document.getElementById('available-balance');
+      if (availableBalanceElement) {
+        availableBalanceElement.textContent = '$' + this.formatMoney(this.walletData.total_usd || 0);
+      }
+    }
   }
 
   renderAllocationChart() {
