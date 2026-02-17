@@ -293,7 +293,7 @@ class KYCPage {
       const fileName = `${fileKey}_${Date.now()}_${file.name}`;
       const filePath = `kyc/${this.currentUser.id}/${fileName}`;
 
-      const { data, error } = await window.supabaseClient.storage
+      const { data, error } = await window.SupabaseClient.getClient().storage
         .from('KYC_KEEP')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -305,7 +305,7 @@ class KYCPage {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = window.supabaseClient.storage
+      const { data: { publicUrl } } = window.SupabaseClient.getClient().storage
         .from('KYC_KEEP')
         .getPublicUrl(filePath);
 
