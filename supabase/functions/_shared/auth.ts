@@ -14,18 +14,57 @@ export function getAuthHeader(req: Request): string | null {
   return authHeader;
 }
 
-// Single authentication function - reads env vars inside handler
-export async function requireUser(req: Request, supabaseAdminClient?: any) {
+// Load profile function for KYC and other functions
+export async function loadProfile(req: Request, supabase: any, userId: string) {
+  try {
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+    
+    if (error) {
+      console.error('Profile query error:', error);
+      return { 
+        user_id: userId, 
+        role: "user", 
+        created_at: new Date().toISOString(), 
+        missing: true,
+        db_error: error.message 
+      };
+    }
+    
+    if (!profile) {
+      console.log('Profile not found for user:', userId);
+      return { 
+        user_id: userId, 
+        role: "user", 
+        created_at: new Date().toISOString(), 
+        missing: true 
+      };
+    }
+    
+    return { ...profile, missing: false };
+  } catch (error: any) {
+    console.error('Profile loading error:', error);
+    return { 
+      user_id: userId, 
+      role: "user", 
+      created_at: new Date().toISOString(), 
+      missing: true,
+      db_error: error.message 
+    };
+  }
+}
+
+// Get user or return 401 response
+export async function getUserOr401(req: Request) {
   // Get environment variables safely inside function
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
   const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    return {
-      ok: false,
-      status: 500,
-      body: { ok: false, error: "SERVER_MISCONFIG", detail: "Missing database configuration" }
-    };
+    return json({ ok: false, error: "SERVER_MISCONFIG", detail: "Missing database configuration" }, 500, req);
   }
   
   // Extract Authorization header
@@ -35,29 +74,21 @@ export async function requireUser(req: Request, supabaseAdminClient?: any) {
   
   if (!authHeader) {
     console.log('Edge Function: No auth header found');
-    return {
-      ok: false,
-      status: 401,
-      body: { ok: false, error: "UNAUTHENTICATED", detail: "Missing or invalid Authorization header" }
-    };
+    return json({ ok: false, error: "UNAUTHENTICATED", detail: "Missing or invalid Authorization header" }, 401, req);
   }
   
   // Validate Bearer format
   if (!authHeader.startsWith('Bearer ')) {
     console.log('Edge Function: Invalid auth header format, expected "Bearer <token>"');
-    return {
-      ok: false,
-      status: 401,
-      body: { ok: false, error: "INVALID_JWT_FORMAT", detail: "Authorization header must be in format 'Bearer <token>'" }
-    };
+    return json({ ok: false, error: "INVALID_JWT_FORMAT", detail: "Authorization header must be in format 'Bearer <token>'" }, 401, req);
   }
   
   const token = authHeader.substring(7); // Remove "Bearer "
   console.log('Edge Function: JWT token extracted:', token.substring(0, 20) + '...');
   console.log('Edge Function: JWT token length:', token.length);
   
-  // Use provided admin client or create new one
-  const supabase = supabaseAdminClient || createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  // Create admin client
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false },
     global: {
       headers: {
@@ -71,39 +102,25 @@ export async function requireUser(req: Request, supabaseAdminClient?: any) {
     const { data: { user }, error } = await supabase.auth.getUser();
     
     if (error || !user) {
-      return {
-        ok: false,
-        status: 401,
-        body: { ok: false, error: "UNAUTHENTICATED", detail: "Invalid or expired token" }
-      };
+      return json({ ok: false, error: "UNAUTHENTICATED", detail: "Invalid or expired token" }, 401, req);
     }
     
-    // Load profile with ONLY these columns: user_id, role, created_at
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("user_id, role, created_at")
-      .eq("user_id", user.id)
-      .single();
-    
-    if (profileError || !profile) {
-      return {
-        ok: false,
-        status: 403,
-        body: { ok: false, error: "PROFILE_NOT_FOUND", detail: "User profile not found" }
-      };
-    }
-    
-    return {
-      ok: true,
-      user,
-      profile
-    };
+    return { user, supabase };
   } catch (error) {
-    return {
-      ok: false,
-      status: 500,
-      body: { ok: false, error: "SERVER_ERROR", detail: String(error) }
-    };
+    return json({ ok: false, error: "SERVER_ERROR", detail: String(error) }, 500, req);
   }
+}
+
+// Helper function for JSON responses
+function json(data: any, status: number, req: Request) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }
 

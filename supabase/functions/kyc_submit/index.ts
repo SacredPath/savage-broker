@@ -25,12 +25,44 @@ serve(async (req) => {
     
     const { missing, ...profile } = profileResult;
 
+    // Get submission data
+    const body = await req.json();
+    const { firstName, lastName, dateOfBirth, nationality, documents } = body;
+
+    // Update profile with KYC data
+    const { data: updatedProfile, error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        first_name: firstName,
+        last_name: lastName,
+        date_of_birth: dateOfBirth,
+        nationality: nationality,
+        kyc_status: 'pending',
+        kyc_submitted_at: new Date().toISOString(),
+        kyc_documents: documents
+      })
+      .eq("user_id", user.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('KYC submission update error:', updateError);
+      return json({ 
+        ok: false, 
+        error: "SUBMISSION_FAILED",
+        detail: updateError.message 
+      }, 500, req);
+    }
+
     return json({ 
-      ok: false, 
-      error: "NOT_IMPLEMENTED"
-    }, 501, req);
+      ok: true,
+      status: 'pending',
+      message: "KYC submitted successfully",
+      profile: updatedProfile
+    }, 200, req);
 
   } catch (error) {
+    console.error('KYC submission error:', error);
     return json({ok:false,error:"SERVER_ERROR",detail:String(error)}, 500, req);
   }
 });

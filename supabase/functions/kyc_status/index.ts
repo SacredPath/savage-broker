@@ -25,10 +25,13 @@ serve(async (req) => {
     
     const { missing, ...profile } = profileResult;
 
+    // Return KYC status from profile
     return json({ 
-      ok: false, 
-      error: "NOT_IMPLEMENTED"
-    }, 501, req);
+      ok: true,
+      status: profile.kyc_status || 'not_submitted',
+      user_id: user.id,
+      profile: profile
+    }, 200, req);
 
   } catch (error) {
     return json({ok:false,error:"SERVER_ERROR",detail:String(error)}, 500, req);
